@@ -1,0 +1,17 @@
+# 目录
+/.idea/
+/.vscode/
+/vendor/
+/runtime/
+/public/uploads/
+/.settings
+/.buildpath
+/.project
+
+# 文件
+.DS_Store
+*.log
+/public/.htaccess
+composer.phar
+composer.lock
+Thumbs.db
