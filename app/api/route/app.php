@@ -9,8 +9,18 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use think\facade\Route;
+use think\middleware\Throttle;
 
-Route::get('demo', 'TestController/demo');
+Route::group(function() {
+    Route::get('demo', 'Test/demo');
+    Route::get('adset', 'AdSet/index');
+    Route::get('adset_detail', 'AdSet/detail');
+    Route::get('ad', 'Ad/index');
+    Route::get('ad_detail', 'Ad/detail');
+})->middleware(Throttle::class, [
+    'visit_rate' => '60/m',
+    'key' => '__CONTROLLER__/__ACTION__/__IP__',
+]);
 
 Route::get('think', function () {
     return 'hello,ThinkPHP8!';

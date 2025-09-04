@@ -9,6 +9,7 @@
 /.project
 
 # 文件
+.env
 .DS_Store
 *.log
 /public/.htaccess

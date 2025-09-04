@@ -8,8 +8,12 @@ use think\Request;
 
 class Base
 {
+    protected $app;     //应用实例
+    protected $request; //Request实例
+
     public function __construct(App $app)
     {
-
+        $this->app     = $app;
+        $this->request = $this->app->request;
     }
 }
