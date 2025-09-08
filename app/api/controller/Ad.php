@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace app\api\controller;
 
-use app\common\lib\Response;
+
 use app\model\AdModel;
 use think\App;
 use think\facade\Cache;
@@ -37,7 +37,7 @@ class Ad extends Base
             'count' => $count,
             'list' => $ad_set_list
         ];
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 
     /**
@@ -51,7 +51,7 @@ class Ad extends Base
         $id = $this->request->param('id');
         if(empty($id))
         {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
 
         $cache_key = sprintf("ad:id:%s", $id);
@@ -65,6 +65,6 @@ class Ad extends Base
             //写入缓存
             Cache::store('redis')->set($cache_key, $res);
         }
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 }

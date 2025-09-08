@@ -4,7 +4,7 @@ declare (strict_types = 1);
 namespace app\admin\controller;
 
 use app\common\lib\Auth;
-use app\common\lib\Response;
+
 use think\App;
 use think\facade\Cache;
 use think\facade\Db;
@@ -25,7 +25,7 @@ class Index extends Base
             ['id'=>1001,'title'=>'标题1'],
             ['id'=>1002,'title'=>'标题2']
         ];
-        return response::success('',0, $data);
+        return $this->success($data);
     }
 
     public function login()
@@ -35,6 +35,6 @@ class Index extends Base
         $info = [
             'token' => $token
         ];
-        return response::success('',0, $info);
+        return $this->success($info);
     }
 }

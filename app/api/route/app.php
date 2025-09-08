@@ -13,6 +13,7 @@ use think\middleware\Throttle;
 
 Route::group(function() {
     Route::get('demo', 'Test/demo');
+    Route::get('/', 'Index/index');
     Route::get('adset', 'AdSet/index');
     Route::get('adset_detail', 'AdSet/detail');
     Route::get('ad', 'Ad/index');

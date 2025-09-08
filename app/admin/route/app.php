@@ -26,11 +26,15 @@ Route::group(function() {
     Route::post('adset_delete', 'AdSet/delete');
     Route::post('adset_add', 'AdSet/add');
     Route::post('adset_edit', 'AdSet/edit');
+    Route::post('adset_enable', 'AdSet/enable');
+    Route::post('adset_disable', 'AdSet/disable');
     Route::get('ad', 'Ad/index');
     Route::get('ad_detail', 'Ad/detail');
     Route::post('ad_delete', 'Ad/delete');
     Route::post('ad_add', 'Ad/add');
     Route::post('ad_edit', 'Ad/edit');
+    Route::post('ad_enable', 'Ad/enable');
+    Route::post('ad_disable', 'Ad/disable');
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',

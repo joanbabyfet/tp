@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-use app\common\lib\Response;
+
 use app\service\sms\SmsContext;
 use app\service\sms\SmsFactory;
 use app\service\sms\SmsStrategy;
@@ -28,7 +28,7 @@ class Common extends Base
             'phone' => $this->request->post('phone'),
         ];
         if (!$validate->check($data)) {
-            return response::invalid_params();
+            return $this->invalid_params();
         }
         $code = rand(100000, 999999); //生成6位随机数
 
@@ -37,9 +37,9 @@ class Common extends Base
         $smsContext = new SmsContext($strategy);
         $status = $smsContext->send($data['phone'], $code);
         if($status < 0) {
-            return response::error($strategy->get_err_msg($status), $status);
+            return $this->error($strategy->get_err_msg($status), $status);
         }
-        return response::success(Lang::get('common_send_suc'),0, []);
+        return $this->success();
     }
 
     public function unimtx()

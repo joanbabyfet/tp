@@ -3,13 +3,11 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-use app\common\lib\Response;
-use app\model\AdModel;
+
 use app\model\AdSetModel;
 use think\facade\Cache;
 use think\facade\Lang;
 use think\facade\Validate;
-use think\Request;
 
 class AdSet extends Base
 {
@@ -30,14 +28,14 @@ class AdSet extends Base
         $map = []; //筛选
         $name and $map['name'] = ['like', "%{$name}%"];
         is_numeric($status) and $map['status'] = $status;
-        $ad_set_list = AdSetModel::where($map)->limit($offset , (int)$page_size)->order(['create_time' => 'desc'])->select();
+        $ad_sets = AdSetModel::where($map)->limit($offset , (int)$page_size)->order(['create_time' => 'desc'])->select();
         //获取总条数
         $count = AdSetModel::where($map)->count();
         $res = [
             'count' => $count,
-            'list' => $ad_set_list
+            'list' => $ad_sets
         ];
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 
     /**
@@ -52,7 +50,7 @@ class AdSet extends Base
             'status'    => 'require|string',
         ]);
         if (!$validate->check($this->request->post())) {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
 
         //添加
@@ -64,9 +62,9 @@ class AdSet extends Base
         $adset_model = new AdSetModel();
         $status = $adset_model->save($data);
         if(!$status) {
-            return response::error(Lang::get('common_add_fail'), -2);
+            return $this->error(Lang::get('common_add_fail'), -1);
         }
-        return response::success(Lang::get('common_add_suc'),0);
+        return $this->success();
     }
 
     /**
@@ -80,11 +78,11 @@ class AdSet extends Base
         $id = $this->request->param('id');
         if(empty($id))
         {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
         //获取详情
         $res = AdSetModel::where(['id' => $id])->find();
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 
     /**
@@ -101,7 +99,7 @@ class AdSet extends Base
             'status'    => 'require|string',
         ]);
         if (!$validate->check($this->request->post())) {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
         $id = $this->request->post('id');
 
@@ -114,13 +112,13 @@ class AdSet extends Base
         ];
         $status = AdSetModel::where(['id' => $id])->update($data);
         if(!$status) {
-            return response::error(Lang::get('common_update_fail'), -2);
+            return $this->error(Lang::get('common_update_fail'), -1);
         }
         //干掉緩存
         $cache_key = sprintf("adset:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
 
-        return response::success(Lang::get('common_update_suc'),0);
+        return $this->success();
     }
 
     /**
@@ -134,17 +132,81 @@ class AdSet extends Base
         $id = $this->request->post('id');
         if(empty($id))
         {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
         //软删除
         $status = AdSetModel::destroy($id);
         if(!$status) {
-            return response::error(Lang::get('common_delete_fail'), -2);
+            return $this->error(Lang::get('common_delete_fail'), -1);
         }
         //干掉緩存
         $cache_key = sprintf("adset:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
 
-        return response::success(Lang::get('common_delete_suc'),0);
+        return $this->success();
+    }
+
+    /**
+     * 启用
+     * @return \think\response\Json
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function enable()
+    {
+        $validate = Validate::rule([
+            'id'        => 'require|string',
+        ]);
+        if (!$validate->check($this->request->post())) {
+            return $this->invalid_params();
+        }
+        $id = $this->request->post('id');
+
+        //更新
+        $data = [
+            'status' => 1,
+            'update_user' => '1',
+            'update_time' => time()
+        ];
+        $status = AdSetModel::where(['id' => $id])->update($data);
+        if(!$status) {
+            return $this->error(Lang::get('common_update_fail'), -1);
+        }
+        //干掉緩存
+        $cache_key = sprintf("adset:id:%s", $id);
+        Cache::store('redis')->delete($cache_key);
+
+        return $this->success();
+    }
+
+    /**
+     * 禁用
+     * @return \think\response\Json
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function disable()
+    {
+        $validate = Validate::rule([
+            'id'        => 'require|string',
+        ]);
+        if (!$validate->check($this->request->post())) {
+            return $this->invalid_params();
+        }
+        $id = $this->request->post('id');
+
+        //更新
+        $data = [
+            'status' => 0,
+            'update_user' => '1',
+            'update_time' => time()
+        ];
+        $status = AdSetModel::where(['id' => $id])->update($data);
+        if(!$status) {
+            return $this->error(Lang::get('common_update_fail'), -1);
+        }
+        //干掉緩存
+        $cache_key = sprintf("adset:id:%s", $id);
+        Cache::store('redis')->delete($cache_key);
+
+        return $this->success();
     }
 }

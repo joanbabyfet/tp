@@ -9,6 +9,6 @@ class Test extends Base
 {
     public function demo()
     {
-
+        return $this->success();
     }
 }

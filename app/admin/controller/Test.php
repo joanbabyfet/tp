@@ -4,7 +4,7 @@ declare (strict_types = 1);
 namespace app\admin\controller;
 
 use app\common\lib\RedisLock;
-use app\common\lib\Response;
+
 use app\common\lib\Util;
 use app\job\MailJob;
 use app\job\PushJob;
@@ -68,6 +68,9 @@ class Test extends Base
 //        $data = ['name' => '我是标题', 'content' => '我是内容'];
 //        Db::name('example')->insert($data);
 //        Db::name('example')->insertGetId($data);
+
+        $data = ['name' => '我是标题'];
+        Db::name('ad_set')->insert($data);
 
         //批量添加, 返回添加条数
 //        $data = [
@@ -166,9 +169,9 @@ class Test extends Base
 //        $push_service = new PushService();
 //        $status = $push_service->send($data);
 //        if($status < 0) {
-//            return response::error($push_service->get_err_msg($status), $status);
+//            return $this->error($push_service->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, []);
+//        return $this->success();
 
         //发送邮件
 //        $to = 'alan025.infinity@gmail.com';
@@ -177,9 +180,9 @@ class Test extends Base
 //        $mail_service = new MailService();
 //        $status = $mail_service->send($to, $subject, $body);
 //        if($status < 0) {
-//            return response::error($mail_service->get_err_msg($status), $status);
+//            return $this->error($mail_service->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, []);
+//        return $this->success();
 
         //测试队列
 //        $data = [
@@ -189,7 +192,7 @@ class Test extends Base
 //        for($i = 0; $i < 2; $i++) {
 //            Queue::push(SmsJob::class, $data, $queue = 'sms');
 //        }
-//        return response::success('',0, []);
+//        return $this->success();
 
 //        $data = [
 //            'to'        => 'alan025.infinity@gmail.com',
@@ -199,7 +202,7 @@ class Test extends Base
 //        for($i = 0; $i < 5; $i++) {
 //            Queue::push(MailJob::class, $data, $queue = 'mail');
 //        }
-//        return response::success('',0, []);
+//        return $this->success();
 
 //        $data = [
 //            'token' => 'fNrBZGpWQe-YNLRaU_K-_c:APA91bFjXKh-IpWch7eKC5r1lsKm05EpjSBS-wAWzVtaJiWzoM9yPJ-xMMpNEnL3u7AXo4ez7xK4141sWDHNAOFsfKh5ZmU6j1sY02M-rkjCWuO3X6BqUwI',
@@ -212,7 +215,7 @@ class Test extends Base
 //        ];
 //        //database 驱动时，返回值为 1|false  ;   redis 驱动时，返回值为 随机字符串|false
 //        Queue::push(PushJob::class, $data, $queue = 'push');
-//        return response::success('',0);
+//        return $this->success();
 
         //测试短信
 //        $phone = '886958035350';
@@ -223,9 +226,9 @@ class Test extends Base
 //        $smsContext = new SmsContext($strategy);
 //        $status = $smsContext->send($phone, $code);
 //        if($status < 0) {
-//            return response::error($strategy->get_err_msg($status), $status);
+//            return $this->error($strategy->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, []);
+//        return $this->success();
 
         //测试支付
 //        $data = [
@@ -239,9 +242,9 @@ class Test extends Base
 //        $payContext = new PayContext($strategy);
 //        $status = $payContext->order_query($data, $ret_data);
 //        if($status < 0) {
-//            return response::error($strategy->get_err_msg($status), $status);
+//            return $this->error($strategy->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, $ret_data);
+//        return $this->success($ret_data);
 
 //        $data = [
 //            'order_id'      => '2507151011058142405',
@@ -260,9 +263,9 @@ class Test extends Base
 //        $payContext = new PayContext($strategy);
 //        $status = $payContext->pay($data, $ret_data);
 //        if($status < 0) {
-//            return response::error($strategy->get_err_msg($status), $status);
+//            return $this->error($strategy->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, $ret_data);
+//        return $this->success($ret_data);
 
         //des加密与解密
 //        $data = 'kosplay';
@@ -279,32 +282,32 @@ class Test extends Base
 //        $tgService = new TgService();
 //        $status = $tgService->send($chat_id, $text, $ret_data);
 //        if($status < 0) {
-//            return response::error($tgService->get_err_msg($status), $status);
+//            return $this->error($tgService->get_err_msg($status), $status);
 //        }
-//        return response::success('',0, $ret_data);
+//        return $this->success($ret_data);
 
 //        $data = [
 //            'chat_id' => 1482669960,
 //            'text' => '测试用',
 //        ];
 //        Queue::push(TgJob::class, $data, $queue = 'tg');
-        //return response::success('',0, []);
+        //return $this->success();
 
         // 遇锁立刻返回
 //        if(!RedisLock::lock('test', 12, 2))
 //        {
-//            return response::error('获取锁失败', -1);
+//            return $this->error('获取锁失败', -1);
 //        }
 //        //业务
 //        RedisLock::unlock('test');
-//        return response::success('',0, []);
+//        return $this->success();
 
         //添加
         //方法1
-//        $ad_model = new AdModel();
-//        $ad_model->title     = '我是广告';
-//        $ad_model->save();
-//        $last_insert_id = $ad_model->id; //获取自增id
+        $ad_model = new AdModel();
+        $ad_model->title     = '我是广告';
+        $ad_model->save();
+        $last_insert_id = $ad_model->id; //获取自增id
 
         //方法2
 //        $data = [
@@ -454,8 +457,8 @@ class Test extends Base
 //        }
 
         //跳转到外部地址
-        return redirect('https://www.baidu.com');
+        //return redirect('https://www.baidu.com');
 
-        //return response::success('',0, $res);
+        return $this->success();
     }
 }

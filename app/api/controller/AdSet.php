@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace app\api\controller;
 
-use app\common\lib\Response;
+
 use app\model\AdModel;
 use app\model\AdSetModel;
 use think\App;
@@ -38,7 +38,7 @@ class AdSet extends Base
             'count' => $count,
             'list' => $ad_set_list
         ];
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 
     /**
@@ -52,7 +52,7 @@ class AdSet extends Base
         $id = $this->request->param('id');
         if(empty($id))
         {
-            return response::error(Lang::get('common_param_error'), -1);
+            return $this->invalid_params();
         }
 
         $cache_key = sprintf("adset:id:%s", $id);
@@ -66,6 +66,6 @@ class AdSet extends Base
             //写入缓存
             Cache::store('redis')->set($cache_key, $res);
         }
-        return response::success('',0, $res);
+        return $this->success($res);
     }
 }

@@ -4,7 +4,7 @@ declare (strict_types = 1);
 namespace app\middleware;
 
 use app\common\lib\Auth;
-use app\common\lib\Response;
+
 use think\exception\HttpResponseException;
 use think\facade\Lang;
 
