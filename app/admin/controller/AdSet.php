@@ -12,7 +12,7 @@ use think\facade\Validate;
 class AdSet extends Base
 {
     /**
-     * 显示资源列表
+     * 显示资源列表1
      *
      * @return \think\Response
      */
