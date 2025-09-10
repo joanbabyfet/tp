@@ -17,4 +17,5 @@ Route::get('think', function () {
 //Route::get('hello/:name', 'index/hello');
 
 Route::get('/', 'Index/index')->middleware(['lang', 'country_filter']);
-Route::get('/demo', 'Test/demo');
+Route::get('demo', 'Test/demo');
+Route::get('workerman', 'Index/workerman');

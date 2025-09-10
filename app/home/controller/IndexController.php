@@ -31,4 +31,9 @@ class IndexController extends BaseController
         ]);
         return View::fetch();
     }
+
+    public function workerman()
+    {
+        return View::fetch();
+    }
 }
