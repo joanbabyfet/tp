@@ -4,16 +4,19 @@ declare (strict_types = 1);
 namespace app\admin\controller;
 
 
+use app\common\traits\UploadTrait;
 use app\service\sms\SmsContext;
 use app\service\sms\SmsFactory;
 use app\service\sms\SmsStrategy;
 use app\service\sms\strategy\UnimtxStrategy;
+use think\captcha\Captcha;
 use think\facade\App;
-use think\facade\Lang;
 use think\facade\Validate;
 
-class Common extends Base
+class CommonController extends BaseController
 {
+    use UploadTrait;
+
     /**
      * 发送短信验证码
      * @return \think\response\Json

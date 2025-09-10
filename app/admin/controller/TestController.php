@@ -31,7 +31,7 @@ use think\facade\Lang;
 use think\facade\Queue;
 use think\Request;
 
-class Test extends Base
+class TestController extends BaseController
 {
     public function demo()
     {

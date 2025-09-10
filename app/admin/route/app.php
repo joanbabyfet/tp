@@ -16,11 +16,11 @@ use think\middleware\Throttle;
  */
 
 Route::group(function() {
-    Route::get('/', 'Index/index')->middleware(['auth', 'lang', 'country_filter']);
+    Route::get('/', 'Index/index')->middleware(['lang', 'country_filter']);
     Route::get('login', 'Index/login');
     Route::get('demo', 'Test/demo');
     Route::post('send_verify_code', 'Common/send_verify_code');
-    Route::post('upload', 'Upload/upload');
+    Route::post('upload', 'Common/upload');
     Route::get('adset', 'AdSet/index');
     Route::get('adset_detail', 'AdSet/detail');
     Route::post('adset_delete', 'AdSet/delete');

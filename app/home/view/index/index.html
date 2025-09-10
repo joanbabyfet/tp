@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="header">
+    {include file='public/header' ／}
+</div>
+
+<div>
+    <div>{:captcha_img()}</div>
+    session_id: {$user.session_id}
+    name: {$user.name}<br>
+    age: {$user.age}<br>
+    phone: {$user.phone}<br>
+</div>
+
+<div id="footer">
+    {include file='public/footer' ／}
+</div>
+</body>
+</html>

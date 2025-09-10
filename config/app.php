@@ -19,7 +19,7 @@ return [
     'domain_bind'      => [
         'api'       => 'api', // api应用对应域名
         'admin'     => 'admin', // 后台对应域名
-        'tp.com'    => 'home', // 前台对应域名
+        'tp.local'  => 'home', // 前台对应域名
     ],
     // 禁止URL访问的应用列表（自动多应用模式有效）
     'deny_app_list'    => [],

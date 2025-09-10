@@ -11,7 +11,7 @@ use think\facade\Lang;
 use think\facade\Validate;
 use think\Request;
 
-class Ad extends Base
+class AdController extends BaseController
 {
     /**
      * 显示资源列表

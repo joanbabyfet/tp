@@ -10,10 +10,13 @@ return [
     'var_session_id' => '',
     // 驱动方式 支持file cache
     'type'           => 'file',
+    //'type'           => 'cache',
     // 存储连接标识 当type使用cache的时候有效
     'store'          => null,
+    //'store'          => 'session',
     // 过期时间
-    'expire'         => 1440,
+    'expire'         => 1440, //单位秒
+    //'expire'         => 86400,
     // 前缀
     'prefix'         => '',
 ];

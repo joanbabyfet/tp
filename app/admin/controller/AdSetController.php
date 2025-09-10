@@ -9,10 +9,10 @@ use think\facade\Cache;
 use think\facade\Lang;
 use think\facade\Validate;
 
-class AdSet extends Base
+class AdSetController extends BaseController
 {
     /**
-     * 显示资源列表1
+     * 显示资源列表
      *
      * @return \think\Response
      */

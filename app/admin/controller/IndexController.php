@@ -12,7 +12,7 @@ use think\facade\Lang;
 use think\facade\Queue;
 use think\facade\Request;
 
-class Index extends Base
+class IndexController extends BaseController
 {
     public function __construct(App $app)
     {

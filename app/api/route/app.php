@@ -18,6 +18,7 @@ Route::group(function() {
     Route::get('adset_detail', 'AdSet/detail');
     Route::get('ad', 'Ad/index');
     Route::get('ad_detail', 'Ad/detail');
+    Route::post('upload', 'Common/upload');
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',
