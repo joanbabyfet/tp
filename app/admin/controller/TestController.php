@@ -11,6 +11,7 @@ use app\job\PushJob;
 use app\job\SmsJob;
 use app\job\TgJob;
 use app\model\AdModel;
+use app\service\AdService;
 use app\service\MailService;
 use app\service\pay\PayContext;
 use app\service\pay\PayFactory;
@@ -69,8 +70,8 @@ class TestController extends BaseController
 //        Db::name('example')->insert($data);
 //        Db::name('example')->insertGetId($data);
 
-        $data = ['name' => '我是标题'];
-        Db::name('ad_set')->insert($data);
+//        $data = ['name' => '我是标题'];
+//        Db::name('ad_set')->insert($data);
 
         //批量添加, 返回添加条数
 //        $data = [
@@ -304,10 +305,10 @@ class TestController extends BaseController
 
         //添加
         //方法1
-        $ad_model = new AdModel();
-        $ad_model->title     = '我是广告';
-        $ad_model->save();
-        $last_insert_id = $ad_model->id; //获取自增id
+//        $ad_model = new AdModel();
+//        $ad_model->title     = '我是广告';
+//        $ad_model->save();
+//        $last_insert_id = $ad_model->id; //获取自增id
 
         //方法2
 //        $data = [
@@ -459,6 +460,61 @@ class TestController extends BaseController
         //跳转到外部地址
         //return redirect('https://www.baidu.com');
 
+        //获取列表
+//        $adService = new AdService();
+//        $data = [
+//            'page' => 1,
+//            'page_size' => 10
+//        ];
+//        //$sort = ['create_time' => 'asc'];
+//        $status = $adService->get_list($data, $ret_data);
+//        if($status < 0) {
+//            return $this->error($adService->get_err_msg($status), $status);
+//        }
+//        return $this->success($ret_data);
+
+        //获取详情
+//        $adService = new AdService();
+//        $data = [
+//            'id' => 18
+//        ];
+//        $status = $adService->detail($data, $ret_data);
+//        if($status < 0) {
+//            return $this->error($adService->get_err_msg($status), $status);
+//        }
+//        return $this->success($ret_data);
+
+        //启用
+//        $adService = new AdService();
+//        $data = [
+//            'id' => 18
+//        ];
+//        $status = $adService->enable($data);
+//        if($status < 0) {
+//            return $this->error($adService->get_err_msg($status), $status);
+//        }
+//        return $this->success();
+
+        //禁用
+//        $adService = new AdService();
+//        $data = [
+//            'id' => 18
+//        ];
+//        $status = $adService->disable($data);
+//        if($status < 0) {
+//            return $this->error($adService->get_err_msg($status), $status);
+//        }
+//        return $this->success();
+
+        //删除
+        $adService = new AdService();
+        $data = [
+            'id' => [6, 7]
+        ];
+        $status = $adService->del($data);
+        if($status < 0) {
+            return $this->error($adService->get_err_msg($status), $status);
+        }
         return $this->success();
     }
 }
