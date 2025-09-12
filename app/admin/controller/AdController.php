@@ -3,15 +3,9 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-
-use app\model\AdModel;
-use app\model\AdSetModel;
 use app\service\AdService;
 use think\App;
 use think\facade\Cache;
-use think\facade\Lang;
-use think\facade\Validate;
-use think\Request;
 
 class AdController extends BaseController
 {

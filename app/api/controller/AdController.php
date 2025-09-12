@@ -3,54 +3,50 @@ declare (strict_types = 1);
 
 namespace app\api\controller;
 
-
-use app\model\AdModel;
+use app\service\AdService;
 use think\App;
 use think\facade\Cache;
-use think\facade\Lang;
-use think\Request;
 
 class AdController extends BaseController
 {
+    protected $service;
     public function __construct(App $app)
     {
         parent::__construct($app);
+        $this->service = new AdService(); //实例化服务
     }
 
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
+     * 获取分页列表
+     * @return \think\response\Json
      */
     public function index()
     {
         $page   = $this->request->param('page', 1);
         $page_size   = $this->request->param('page_size', 10);
-        $offset = ($page - 1) * $page_size;
 
-        //获取广告设置列表
-        $map = ['status' => 1];
-        $ad_set_list = AdModel::where($map)->limit($offset , (int)$page_size)->order(['create_time' => 'desc'])->select();
-        //获取总条数
-        $count = AdModel::where($map)->count();
-        $res = [
-            'count' => $count,
-            'list' => $ad_set_list
+        //筛选
+        $where = ['status' => 1];
+        $data = [
+            'page'      => $page,
+            'page_size' => $page_size,
+            'where'     => $where,
         ];
-        return $this->success($res);
+        $status = $this->service->get_list($data, $ret_data);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
+        }
+        return $this->success($ret_data);
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param  int  $id
-     * @return \think\Response
+     * 获取详请
+     * @return \think\response\Json
      */
     public function detail()
     {
         $id = $this->request->param('id');
-        if(empty($id))
-        {
+        if(empty($id)) {
             return $this->invalid_params();
         }
 
@@ -58,10 +54,7 @@ class AdController extends BaseController
         $res = Cache::store('redis')->get($cache_key);
         if(empty($res)) {
             //获取详情
-            $map = [];
-            $map['status'] = 1;
-            $map['id'] = $id;
-            $res = AdModel::where($map)->find();
+            $this->service->detail(['id' => $id], $res);
             //写入缓存
             Cache::store('redis')->set($cache_key, $res);
         }

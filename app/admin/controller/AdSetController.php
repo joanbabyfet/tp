@@ -3,142 +3,117 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-
-use app\model\AdSetModel;
+use app\service\AdSetService;
+use think\App;
 use think\facade\Cache;
-use think\facade\Lang;
-use think\facade\Validate;
 
 class AdSetController extends BaseController
 {
+    protected $service;
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->service = new AdSetService(); //实例化服务
+    }
+
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
+     * 获取分页列表
+     * @return \think\response\Json
      */
     public function index()
     {
         $name = $this->request->param('name');
         $status = $this->request->param('status');
         $page   = $this->request->param('page', 1);
-        $page_size   = $this->request->param('page_size', 10);
-        $offset = ($page - 1) * $page_size;
+        $page_size   = $this->request->param('page_size', 20);
 
-        //获取广告列表
-        $map = []; //筛选
-        $name and $map['name'] = ['like', "%{$name}%"];
-        is_numeric($status) and $map['status'] = $status;
-        $ad_sets = AdSetModel::where($map)->limit($offset , (int)$page_size)->order(['create_time' => 'desc'])->select();
-        //获取总条数
-        $count = AdSetModel::where($map)->count();
-        $res = [
-            'count' => $count,
-            'list' => $ad_sets
+        //筛选
+        $where = [];
+        $name and $where['name'] = ['like', "%{$name}%"];
+        is_numeric($status) and $where['status'] = $status;
+        $data = [
+            'page'      => $page,
+            'page_size' => $page_size,
+            'where'     => $where,
         ];
-        return $this->success($res);
+        $status = $this->service->get_list($data, $ret_data);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
+        }
+        return $this->success($ret_data);
     }
 
     /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
+     * 获取详请
+     * @return \think\response\Json
      */
-    public function add()
+    public function detail()
     {
-        $validate = Validate::rule([
-            'name'     => 'require|string',
-            'status'    => 'require|string',
-        ]);
-        if (!$validate->check($this->request->post())) {
+        $id = $this->request->param('id');
+        if(empty($id)) {
             return $this->invalid_params();
         }
 
-        //添加
-        $data = [
-            'name' => $this->request->post('name'),
-            'status' => $this->request->post('status'),
-            'create_user' => '1',
-        ];
-        $adset_model = new AdSetModel();
-        $status = $adset_model->save($data);
-        if(!$status) {
-            return $this->error(Lang::get('common_add_fail'), -1);
+        $status = $this->service->detail(['id' => $id], $ret_data);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
+        }
+        return $this->success($ret_data);
+    }
+
+    /**
+     * 添加
+     * @return \think\response\Json
+     */
+    public function add()
+    {
+        $data = $this->request->post();
+
+        $status = $this->service->edit($data);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
         }
         return $this->success();
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function detail()
-    {
-        $id = $this->request->param('id');
-        if(empty($id))
-        {
-            return $this->invalid_params();
-        }
-        //获取详情
-        $res = AdSetModel::where(['id' => $id])->find();
-        return $this->success($res);
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
+     * 编辑
+     * @return \think\response\Json
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function edit()
     {
-        $validate = Validate::rule([
-            'id'        => 'require|string',
-            'name'     => 'require|string',
-            'status'    => 'require|string',
-        ]);
-        if (!$validate->check($this->request->post())) {
-            return $this->invalid_params();
-        }
-        $id = $this->request->post('id');
+        $data = $this->request->post();
 
-        //更新
-        $data = [
-            'name' => $this->request->post('name'),
-            'status' => $this->request->post('status'),
-            'update_user' => '1',
-            'update_time' => time()
-        ];
-        $status = AdSetModel::where(['id' => $id])->update($data);
-        if(!$status) {
-            return $this->error(Lang::get('common_update_fail'), -1);
+        $status = $this->service->edit($data);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
         }
+
         //干掉緩存
-        $cache_key = sprintf("adset:id:%s", $id);
+        $cache_key = sprintf("adset:id:%s", $data['id']);
         Cache::store('redis')->delete($cache_key);
 
         return $this->success();
     }
 
     /**
-     * 删除指定资源
-     *
-     * @param  int  $id
-     * @return \think\Response
+     * 删除
+     * @return \think\response\Json
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function delete()
     {
         $id = $this->request->post('id');
-        if(empty($id))
-        {
+        if(empty($id)) {
             return $this->invalid_params();
         }
-        //软删除
-        $status = AdSetModel::destroy($id);
-        if(!$status) {
-            return $this->error(Lang::get('common_delete_fail'), -1);
+
+        $status = $this->service->del(['id' => $id]);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
         }
+
         //干掉緩存
         $cache_key = sprintf("adset:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
@@ -153,24 +128,16 @@ class AdSetController extends BaseController
      */
     public function enable()
     {
-        $validate = Validate::rule([
-            'id'        => 'require|string',
-        ]);
-        if (!$validate->check($this->request->post())) {
+        $id = $this->request->post('id');
+        if(empty($id)) {
             return $this->invalid_params();
         }
-        $id = $this->request->post('id');
 
-        //更新
-        $data = [
-            'status' => 1,
-            'update_user' => '1',
-            'update_time' => time()
-        ];
-        $status = AdSetModel::where(['id' => $id])->update($data);
-        if(!$status) {
-            return $this->error(Lang::get('common_update_fail'), -1);
+        $status = $this->service->enable(['id' => $id]);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
         }
+
         //干掉緩存
         $cache_key = sprintf("adset:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
@@ -185,24 +152,16 @@ class AdSetController extends BaseController
      */
     public function disable()
     {
-        $validate = Validate::rule([
-            'id'        => 'require|string',
-        ]);
-        if (!$validate->check($this->request->post())) {
+        $id = $this->request->post('id');
+        if(empty($id)) {
             return $this->invalid_params();
         }
-        $id = $this->request->post('id');
 
-        //更新
-        $data = [
-            'status' => 0,
-            'update_user' => '1',
-            'update_time' => time()
-        ];
-        $status = AdSetModel::where(['id' => $id])->update($data);
-        if(!$status) {
-            return $this->error(Lang::get('common_update_fail'), -1);
+        $status = $this->service->disable(['id' => $id]);
+        if($status < 0) {
+            return $this->error($this->service->get_err_msg($status), $status);
         }
+
         //干掉緩存
         $cache_key = sprintf("adset:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
