@@ -71,7 +71,7 @@ class AdSetService extends BaseService
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

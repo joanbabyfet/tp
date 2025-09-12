@@ -85,7 +85,7 @@ class CYStrategy extends BaseService implements PayStrategy
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;
@@ -127,7 +127,7 @@ class CYStrategy extends BaseService implements PayStrategy
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;
@@ -195,7 +195,7 @@ class CYStrategy extends BaseService implements PayStrategy
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;
