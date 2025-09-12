@@ -29,6 +29,7 @@ use think\App;
 use think\facade\Cache;
 use think\facade\Db;
 use think\facade\Lang;
+use think\facade\Log;
 use think\facade\Queue;
 use think\Request;
 
@@ -507,14 +508,20 @@ class TestController extends BaseController
 //        return $this->success();
 
         //删除
-        $adService = new AdService();
-        $data = [
-            'id' => [6, 7]
-        ];
-        $status = $adService->del($data);
-        if($status < 0) {
-            return $this->error($adService->get_err_msg($status), $status);
-        }
+//        $adService = new AdService();
+//        $data = [
+//            'id' => [6, 7]
+//        ];
+//        $status = $adService->del($data);
+//        if($status < 0) {
+//            return $this->error($adService->get_err_msg($status), $status);
+//        }
+//        return $this->success();
+
+
+        //写入日志通道
+        logger(__METHOD__, ['user' => '流年', 'status' => -1]);
+
         return $this->success();
     }
 }

@@ -26,8 +26,13 @@ class MailService extends BaseService
             $this->mail->CharSet    = 'UTF-8';                          // 邮件编码
             $this->mail->setFrom(config('mail.from_email'), config('mail.from_name')); // 发件人邮箱和名称
         } catch (Exception $e) {
-            //记录日志
-            Log::error('邮件初始化失败: ' . $e->getMessage());
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+            ]);
         }
     }
 
@@ -49,8 +54,8 @@ class MailService extends BaseService
             $this->mail->send();
         } catch (Exception $e) {
             $status = $this->get_exception_status($e);
-            //记录日志
-            Log::error(__METHOD__, [
+            //写入日志
+            logger(__METHOD__, [
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),

@@ -40,6 +40,12 @@ return [
             'realtime_write' => false,
         ],
         // 其它日志通道配置
+        'pay' => [
+            'type'           => 'File',
+            'path'           => app()->getRuntimePath().'pay', //这个路径要记得写
+            'time_format'    => 'Y-m-d H:i:s',
+            'format'         => '[%s][%s] %s',
+        ]
     ],
 
 ];
