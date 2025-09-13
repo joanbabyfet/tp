@@ -3,6 +3,9 @@ declare (strict_types = 1);
 
 namespace app\middleware;
 
+use app\common\lib\ResponseCode;
+use think\facade\Lang;
+
 class IpFilterMiddleware
 {
     /**
@@ -18,8 +21,8 @@ class IpFilterMiddleware
         if (in_array($request->ip(), config('myconfig.ip_blacklist')) && !in_array($request->ip(), config('myconfig.ip_whitelist')))
         {
             return \json([
-                'code'      => ERROR,
-                'msg'       => '您访问的页面不存在',
+                'code'      => ResponseCode::SYS_NO_PERMISSION,
+                'msg'       => Lang::get('common_no_permission'),
                 'timestamp' => time(),
             ], 404);
         }

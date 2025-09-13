@@ -4,12 +4,14 @@ declare (strict_types = 1);
 namespace app\middleware;
 
 use app\common\lib\Auth;
-
-use think\exception\HttpResponseException;
+use app\common\lib\ResponseCode;
+use app\common\traits\ResponseJson;
 use think\facade\Lang;
 
 class AuthMiddleware
 {
+    use ResponseJson;
+
     /**
      * 处理请求
      *
@@ -21,12 +23,12 @@ class AuthMiddleware
     {
         $auth = $request->header('authorization');
         if (empty($auth)) {
-            return response::invalid_params();
+            return $this->invalid_params();
         }
         $token = str_replace('Bearer ','', $auth);
         $status = Auth::checkToken($token, $ret_data);
         if($status < 0) {
-            return response::error(Lang::get('common_no_auth'), response::INVALID_TOKEN);
+            return $this->error(Lang::get('common_no_auth'), ResponseCode::SYS_TOKEN_INVALID);
         }
         if (!empty($ret_data['uid'])) {
             $request->auth = $ret_data['uid'];

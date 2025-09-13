@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app\middleware;
 
+use app\common\lib\ResponseCode;
 use app\common\lib\Util;
 use think\facade\Lang;
 
@@ -13,7 +14,7 @@ class CountryFilterMiddleware
      *
      * @param \think\Request $request
      * @param \Closure       $next
-     * @return Response
+     * @return \think\response\Json
      */
     public function handle($request, \Closure $next)
     {
@@ -29,7 +30,7 @@ class CountryFilterMiddleware
                 return $next($request); //继续执行下一个中间件或路由
             }
             return \json([
-                'code'      => ERROR,
+                'code'      => ResponseCode::SYS_NO_PERMISSION,
                 'msg'       => Lang::get('common_no_permission'),
                 'timestamp' => time(),
             ], 403);
