@@ -1,12 +1,15 @@
 <?php
 declare (strict_types = 1);
 
+namespace app\home\controller;
+
 use app\common\traits\ResponseJson;
 use think\App;
 
-class Base
+class BaseController
 {
     use ResponseJson;
+
     protected $app;     //应用实例
     protected $request; //Request实例
 

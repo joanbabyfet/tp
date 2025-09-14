@@ -5,7 +5,7 @@ namespace app\api\controller;
 
 use think\Request;
 
-class Test extends Base
+class TestController extends BaseController
 {
     public function demo()
     {

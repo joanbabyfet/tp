@@ -6,7 +6,7 @@ namespace app\api\controller;
 
 use think\App;
 
-class Index extends Base
+class IndexController extends BaseController
 {
     public function __construct(App $app)
     {

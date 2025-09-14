@@ -80,12 +80,12 @@ class CYStrategy extends BaseService implements PayStrategy
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
-            //记录日志
-            Log::error(__METHOD__, [
+            //写入日志
+            logger(__METHOD__, [
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;
@@ -122,12 +122,12 @@ class CYStrategy extends BaseService implements PayStrategy
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
-            //记录日志
-            Log::error(__METHOD__, [
+            //写入日志
+            logger(__METHOD__, [
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;
@@ -190,12 +190,12 @@ class CYStrategy extends BaseService implements PayStrategy
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
-            //记录日志
-            Log::error(__METHOD__, [
+            //写入日志
+            logger(__METHOD__, [
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

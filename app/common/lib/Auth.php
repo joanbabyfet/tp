@@ -38,9 +38,9 @@ class Auth
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
             $ret_data = (array)$decoded->data;
         } catch(\Exception $e) {
-            $status = response::INVALID_TOKEN;
-            //记录日志
-            Log::error(__METHOD__, [
+            $status = ResponseCode::SYS_TOKEN_INVALID;
+            //写入日志
+            logger(__METHOD__, [
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),

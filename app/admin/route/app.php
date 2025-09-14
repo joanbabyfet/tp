@@ -16,25 +16,31 @@ use think\middleware\Throttle;
  */
 
 Route::group(function() {
-    Route::get('/', 'Index/index')->middleware(['auth', 'lang', 'country_filter']);
+    Route::get('/', 'Index/index')->middleware(['lang', 'country_filter']);
     Route::get('login', 'Index/login');
     Route::get('demo', 'Test/demo');
     Route::post('send_verify_code', 'Common/send_verify_code');
-    Route::post('upload', 'Upload/upload');
-    Route::get('adset', 'AdSet/index');
-    Route::get('adset_detail', 'AdSet/detail');
-    Route::post('adset_delete', 'AdSet/delete');
-    Route::post('adset_add', 'AdSet/add');
-    Route::post('adset_edit', 'AdSet/edit');
-    Route::post('adset_enable', 'AdSet/enable');
-    Route::post('adset_disable', 'AdSet/disable');
-    Route::get('ad', 'Ad/index');
-    Route::get('ad_detail', 'Ad/detail');
-    Route::post('ad_delete', 'Ad/delete');
-    Route::post('ad_add', 'Ad/add');
-    Route::post('ad_edit', 'Ad/edit');
-    Route::post('ad_enable', 'Ad/enable');
-    Route::post('ad_disable', 'Ad/disable');
+    Route::post('upload', 'Common/upload');
+
+    Route::group('adset', function () {
+        Route::get('/', 'AdSet/index');
+        Route::get('detail', 'AdSet/detail');
+        Route::post('delete', 'AdSet/delete');
+        Route::post('add', 'AdSet/add');
+        Route::post('edit', 'AdSet/edit');
+        Route::post('enable', 'AdSet/enable');
+        Route::post('disable', 'AdSet/disable');
+    });
+
+    Route::group('ad', function () {
+        Route::get('/', 'Ad/index');
+        Route::get('detail', 'Ad/detail');
+        Route::post('delete', 'Ad/delete');
+        Route::post('add', 'Ad/add');
+        Route::post('edit', 'Ad/edit');
+        Route::post('enable', 'Ad/enable');
+        Route::post('disable', 'Ad/disable');
+    });
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',
