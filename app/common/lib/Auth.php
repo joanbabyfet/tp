@@ -4,7 +4,6 @@ namespace app\common\lib;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use think\facade\Log;
 
 class Auth
 {

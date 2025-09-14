@@ -3,7 +3,6 @@
 namespace app\service;
 
 use GuzzleHttp\Client;
-use think\facade\Log;
 
 class TgService extends BaseService
 {

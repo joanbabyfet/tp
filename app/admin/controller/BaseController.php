@@ -5,7 +5,6 @@ namespace app\admin\controller;
 
 use app\common\traits\ResponseJson;
 use think\App;
-use think\Request;
 
 class BaseController
 {

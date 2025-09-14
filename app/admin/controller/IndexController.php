@@ -6,11 +6,6 @@ namespace app\admin\controller;
 use app\common\lib\Auth;
 
 use think\App;
-use think\facade\Cache;
-use think\facade\Db;
-use think\facade\Lang;
-use think\facade\Queue;
-use think\facade\Request;
 
 class IndexController extends BaseController
 {

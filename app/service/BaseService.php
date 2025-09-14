@@ -5,7 +5,6 @@ namespace app\service;
 
 use app\common\lib\ResponseCode;
 use think\facade\Lang;
-use think\facade\Log;
 use think\facade\Validate;
 
 class BaseService

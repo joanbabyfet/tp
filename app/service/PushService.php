@@ -3,7 +3,6 @@ namespace app\service;
 
 use Google\Auth\ApplicationDefaultCredentials;
 use GuzzleHttp\Client;
-use think\facade\Log;
 
 class PushService extends BaseService
 {

@@ -4,7 +4,6 @@ declare (strict_types = 1);
 namespace app\model;
 
 use app\common\lib\Util;
-use think\Model;
 use think\model\concern\SoftDelete;
 
 /**

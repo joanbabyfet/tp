@@ -3,7 +3,6 @@ declare (strict_types = 1);
 
 namespace app\service;
 
-use think\facade\Log;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
 

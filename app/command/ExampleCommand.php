@@ -6,8 +6,6 @@ namespace app\command;
 use app\model\AdModel;
 use think\console\Command;
 use think\console\Input;
-use think\console\input\Argument;
-use think\console\input\Option;
 use think\console\Output;
 
 class ExampleCommand extends Command

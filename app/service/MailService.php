@@ -5,7 +5,6 @@ namespace app\service;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use think\facade\Log;
 
 class MailService extends BaseService
 {
