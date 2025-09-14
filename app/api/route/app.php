@@ -12,9 +12,9 @@ use think\facade\Route;
 use think\middleware\Throttle;
 
 Route::group(function() {
-    Route::get('demo', 'Test/demo');
     Route::get('/', 'Index/index');
     Route::post('upload', 'Common/upload');
+    Route::get('demo', 'Test/demo');
 
     Route::group('adset', function () {
         Route::get('/', 'AdSet/index');
@@ -29,9 +29,3 @@ Route::group(function() {
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',
 ]);
-
-Route::get('think', function () {
-    return 'hello,ThinkPHP8!';
-});
-
-Route::get('hello/:name', 'index/hello');

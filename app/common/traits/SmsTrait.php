@@ -13,7 +13,7 @@ trait SmsTrait
      */
     public function send_verify_code()
     {
-        $phone = $this->request->post('phone');
+        $phone = request()->post('phone');
         if(empty($phone)) {
             return $this->invalid_params();
         }

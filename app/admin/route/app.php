@@ -18,9 +18,9 @@ use think\middleware\Throttle;
 Route::group(function() {
     Route::get('/', 'Index/index')->middleware(['lang', 'country_filter']);
     Route::get('login', 'Index/login');
-    Route::get('demo', 'Test/demo');
     Route::post('send_verify_code', 'Common/send_verify_code');
     Route::post('upload', 'Common/upload');
+    Route::get('demo', 'Test/demo');
 
     Route::group('adset', function () {
         Route::get('/', 'AdSet/index');
@@ -45,9 +45,3 @@ Route::group(function() {
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',
 ]);
-
-Route::get('think', function () {
-    return 'hello,ThinkPHP8!';
-});
-
-Route::get('hello/:name', 'index/hello');

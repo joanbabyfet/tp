@@ -13,18 +13,6 @@ use think\Validate;
 abstract class BaseController
 {
     /**
-     * Request实例
-     * @var \think\Request
-     */
-    protected $request;
-
-    /**
-     * 应用实例
-     * @var \think\App
-     */
-    protected $app;
-
-    /**
      * 是否批量验证
      * @var bool
      */
@@ -41,11 +29,8 @@ abstract class BaseController
      * @access public
      * @param  App  $app  应用对象
      */
-    public function __construct(App $app)
+    public function __construct()
     {
-        $this->app     = $app;
-        $this->request = $this->app->request;
-
         // 控制器初始化
         $this->initialize();
     }
@@ -74,7 +59,7 @@ abstract class BaseController
                 // 支持场景
                 [$validate, $scene] = explode('.', $validate);
             }
-            $class = false !== strpos($validate, '\\') ? $validate : $this->app->parseClass('validate', $validate);
+            $class = false !== strpos($validate, '\\') ? $validate : app()->parseClass('validate', $validate);
             $v     = new $class();
             if (!empty($scene)) {
                 $v->scene($scene);

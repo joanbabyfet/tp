@@ -13,8 +13,8 @@ trait UploadTrait
      */
     public function upload()
     {
-        $file = $this->request->file('file');
-        $param = $this->request->param();
+        $file = request()->file('file');
+        $param = request()->param();
 
         $upload_service = new UploadService();
         $status = $upload_service->upload($file, $param, $ret_data);

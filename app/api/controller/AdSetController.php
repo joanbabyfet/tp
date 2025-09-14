@@ -4,15 +4,14 @@ declare (strict_types = 1);
 namespace app\api\controller;
 
 use app\service\AdSetService;
-use think\App;
 use think\facade\Cache;
 
 class AdSetController extends BaseController
 {
     protected $service;
-    public function __construct(App $app)
+    public function __construct()
     {
-        parent::__construct($app);
+        parent::__construct();
         $this->service = new AdSetService(); //实例化服务
     }
 
@@ -22,8 +21,8 @@ class AdSetController extends BaseController
      */
     public function index()
     {
-        $page   = $this->request->param('page', 1);
-        $page_size   = $this->request->param('page_size', 10);
+        $page   = request()->param('page', 1);
+        $page_size   = request()->param('page_size', 10);
 
         //筛选
         $where = ['status' => 1];
@@ -45,7 +44,7 @@ class AdSetController extends BaseController
      */
     public function detail()
     {
-        $id = $this->request->param('id');
+        $id = request()->param('id');
         if(empty($id)) {
             return $this->invalid_params();
         }

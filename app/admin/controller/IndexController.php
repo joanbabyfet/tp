@@ -5,22 +5,16 @@ namespace app\admin\controller;
 
 use app\common\lib\Auth;
 
-use think\App;
-
 class IndexController extends BaseController
 {
-    public function __construct(App $app)
+    public function __construct()
     {
-        parent::__construct($app);
+        parent::__construct();
     }
 
     public function index()
     {
-        $data = [
-            ['id'=>1001,'title'=>'标题1'],
-            ['id'=>1002,'title'=>'标题2']
-        ];
-        return $this->success($data);
+        return $this->success();
     }
 
     public function login()

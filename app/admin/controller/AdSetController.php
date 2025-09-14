@@ -4,15 +4,14 @@ declare (strict_types = 1);
 namespace app\admin\controller;
 
 use app\service\AdSetService;
-use think\App;
 use think\facade\Cache;
 
 class AdSetController extends BaseController
 {
     protected $service;
-    public function __construct(App $app)
+    public function __construct()
     {
-        parent::__construct($app);
+        parent::__construct();
         $this->service = new AdSetService(); //实例化服务
     }
 
@@ -22,10 +21,10 @@ class AdSetController extends BaseController
      */
     public function index()
     {
-        $name = $this->request->param('name');
-        $status = $this->request->param('status');
-        $page   = $this->request->param('page', 1);
-        $page_size   = $this->request->param('page_size', 20);
+        $name = request()->param('name');
+        $status = request()->param('status');
+        $page   = request()->param('page', 1);
+        $page_size   = request()->param('page_size', 20);
 
         //筛选
         $where = [];
@@ -49,7 +48,7 @@ class AdSetController extends BaseController
      */
     public function detail()
     {
-        $id = $this->request->param('id');
+        $id = request()->param('id');
         if(empty($id)) {
             return $this->invalid_params();
         }
@@ -67,7 +66,7 @@ class AdSetController extends BaseController
      */
     public function add()
     {
-        $data = $this->request->post();
+        $data = request()->post();
 
         $status = $this->service->edit($data);
         if($status < 0) {
@@ -83,7 +82,7 @@ class AdSetController extends BaseController
      */
     public function edit()
     {
-        $data = $this->request->post();
+        $data = request()->post();
 
         $status = $this->service->edit($data);
         if($status < 0) {
@@ -104,7 +103,7 @@ class AdSetController extends BaseController
      */
     public function delete()
     {
-        $id = $this->request->post('id');
+        $id = request()->post('id');
         if(empty($id)) {
             return $this->invalid_params();
         }
@@ -128,7 +127,7 @@ class AdSetController extends BaseController
      */
     public function enable()
     {
-        $id = $this->request->post('id');
+        $id = request()->post('id');
         if(empty($id)) {
             return $this->invalid_params();
         }
@@ -152,7 +151,7 @@ class AdSetController extends BaseController
      */
     public function disable()
     {
-        $id = $this->request->post('id');
+        $id = request()->post('id');
         if(empty($id)) {
             return $this->invalid_params();
         }

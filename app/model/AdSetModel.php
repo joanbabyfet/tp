@@ -26,4 +26,9 @@ class AdSetModel extends BaseModel
     public function getDeleteTimeAttr($value) { //获取器, 格式：get字段名(首字母大写)Attr
         return Util::datetime($value, 'Y-m-d H:i');
     }
+    //数据格式化
+    public function formatInfo($info)
+    {
+        return $info;
+    }
 }
