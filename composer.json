@@ -37,12 +37,8 @@
         "intervention/image": "^3.11",
         "ext-openssl": "*",
         "topthink/think-worker": "^4.0",
-<<<<<<< HEAD
-        "topthink/think-view": "^2.0"
-=======
         "topthink/think-view": "^2.0",
         "topthink/think-captcha": "^3.0"
->>>>>>> 31a348b44e7f8ede2885545d4ecbbb6c5483727a
     },
     "require-dev": {
         "topthink/think-dumper": "^1.0",

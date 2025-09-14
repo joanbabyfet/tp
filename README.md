@@ -1,77 +1,31 @@
-![](https://www.thinkphp.cn/uploads/images/20230630/300c856765af4d8ae758c503185f8739.png)
+## About
+使用 thinkphp8 集成常用功能场景, 使用服务层设计模式实现具体业务逻辑
 
-ThinkPHP 8
-===============
+## Feature
+* 多应用
+* .env多环境
+* JWT令牌
+* 图片上传与缩略图功能
+* 图形验证码功能
+* 发送短信功能, 使用策略模式
+* 发送邮件功能
+* 发送fcm推送消息
+* 发送telegram消息
+* 第三方支付功能, 使用策略模式
+* websocket服务端
+* 定时任务功能
+* 队列功能
+* 多语言功能
+* 限制访问频率中间件
+* 迁移文件功能
+* 视图模板
+* 日志功能
 
-## 特性
+## Requires
+php 8.0+
 
-* 基于PHP`8.0+`重构
-* 升级`PSR`依赖
-* 依赖`think-orm`3.0+版本
-* 全新的`think-dumper`服务，支持远程调试
-* 支持`6.0`/`6.1`无缝升级
+## Maintainers
+Alan
 
-> ThinkPHP8的运行环境要求PHP8.0+
-
-现在开始，你可以使用官方提供的[ThinkChat](https://chat.topthink.com/)，让你在学习ThinkPHP的旅途中享受私人AI助理服务！
-
-![](https://www.topthink.com/uploads/assistant/20230630/4d1a3f0ad2958b49bb8189b7ef824cb0.png)
-
-ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）提供，为生态提供专业的开发者服务和价值之选。
-
-## 文档
-
-[完全开发手册](https://doc.thinkphp.cn)
-
-
-## 赞助
-
-全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
-
-[![](https://www.thinkphp.cn/sponsor/special.svg)](https://www.thinkphp.cn/sponsor/special)
-
-[![](https://www.thinkphp.cn/sponsor.svg)](https://www.thinkphp.cn/sponsor)
-
-## 安装
-
-~~~
-composer create-project topthink/think tp
-~~~
-
-启动服务
-
-~~~
-cd tp
-php think run
-~~~
-
-然后就可以在浏览器中访问
-
-~~~
-http://localhost:8000
-~~~
-
-如果需要更新框架使用
-~~~
-composer update topthink/framework
-~~~
-
-## 命名规范
-
-`ThinkPHP`遵循PSR-2命名规范和PSR-4自动加载规范。
-
-## 参与开发
-
-直接提交PR或者Issue即可
-
-## 版权信息
-
-ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
-
-本项目包含的第三方源码和二进制文件之版权信息另行标注。
-
-版权所有Copyright © 2006-2024 by ThinkPHP (http://thinkphp.cn) All rights reserved。
-
-ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
-
-更多细节参阅 [LICENSE.txt](LICENSE.txt)
+## LICENSE
+[MIT License](https://github.com/joanbabyfet/tp/blob/master/LICENSE)
