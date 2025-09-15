@@ -1,5 +1,5 @@
 ## About
-使用 thinkphp8 集成常用功能与业务场景, 新建一层 Service 做主要的业务处理
+使用 thinkphp8 集成常用功能与业务场景, 代码分层使用 Service 做主要的业务处理
 
 ## Feature
 * 多应用
