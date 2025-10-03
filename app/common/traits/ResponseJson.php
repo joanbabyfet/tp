@@ -2,7 +2,7 @@
 
 namespace app\common\traits;
 
-use app\common\lib\ResponseCode;
+use app\common\lib\cls_response;
 use think\facade\Lang;
 use think\response\Json;
 
@@ -38,9 +38,9 @@ trait ResponseJson
      * @param array $option
      * @return Json
      */
-    public function success($data = [], string $msg = '', int $code = ResponseCode::SUCCESS, array $header = [], array $option = []) : Json
+    public function success($data = [], string $msg = '', int $code = cls_response::SUCCESS, array $header = [], array $option = []) : Json
     {
-        $msg = empty($msg) ? ResponseCode::SUCCESS_MSG : $msg;
+        $msg = empty($msg) ? cls_response::SUCCESS_MSG : $msg;
         return $this->result($code, $msg, $data, $header, $option);
     }
 
@@ -53,9 +53,9 @@ trait ResponseJson
      * @param array $option
      * @return Json
      */
-    public function error(string $msg='', int $code = ResponseCode::ERROR, $data = [], array $header = [], array $option = []) : Json
+    public function error(string $msg='', int $code = cls_response::ERROR, $data = [], array $header = [], array $option = []) : Json
     {
-        $msg = empty($msg) ? ResponseCode::ERROR_MSG : $msg;
+        $msg = empty($msg) ? cls_response::ERROR_MSG : $msg;
         return $this->result($code, $msg, $data, $header, $option);
     }
 
@@ -64,7 +64,7 @@ trait ResponseJson
      * @param $error_code
      * @return Json
      */
-    public function invalid_params($error_code = ResponseCode::SYS_PARAMS_ERROR)
+    public function invalid_params($error_code = cls_response::SYS_PARAMS_ERROR)
     {
         return $this->error(Lang::get('common_param_error'), $error_code);
     }
@@ -74,7 +74,7 @@ trait ResponseJson
      * @param $error_code
      * @return Json
      */
-    public function unknown_error($error_code = ResponseCode::UNKNOWN_ERROR)
+    public function unknown_error($error_code = cls_response::UNKNOWN_ERROR)
     {
         return $this->error(Lang::get('common_unknow_error'), $error_code);
     }
@@ -84,7 +84,7 @@ trait ResponseJson
      * @param $error_code
      * @return Json
      */
-    public function no_permission($error_code = ResponseCode::SYS_NO_PERMISSION)
+    public function no_permission($error_code = cls_response::SYS_NO_PERMISSION)
     {
         return $this->error(Lang::get('common_no_permission'), $error_code);
     }

@@ -3,8 +3,8 @@ declare (strict_types = 1);
 
 namespace app\middleware;
 
-use app\common\lib\ResponseCode;
-use app\common\lib\Util;
+use app\common\lib\cls_response;
+use app\common\lib\cls_util;
 use think\facade\Lang;
 
 class CountryFilterMiddleware
@@ -20,7 +20,7 @@ class CountryFilterMiddleware
     {
         $ip = $request->ip();
         //$ip = '43.245.202.73'; //测试用(KH)
-        $country = util::ip2country($ip);
+        $country = cls_util::ip2country($ip);
         // 如果国家在黑名单里面，而且不在白名单里面
         if ( in_array($country, config('myconfig.country_blacklist')) && !in_array($country, config('myconfig.country_whitelist')) )
         {
@@ -30,7 +30,7 @@ class CountryFilterMiddleware
                 return $next($request); //继续执行下一个中间件或路由
             }
             return \json([
-                'code'      => ResponseCode::SYS_NO_PERMISSION,
+                'code'      => cls_response::SYS_NO_PERMISSION,
                 'msg'       => Lang::get('common_no_permission'),
                 'timestamp' => time(),
             ], 403);

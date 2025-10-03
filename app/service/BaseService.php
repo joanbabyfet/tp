@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace app\service;
 
-use app\common\lib\ResponseCode;
+use app\common\lib\cls_response;
 use think\facade\Lang;
 use think\facade\Validate;
 
@@ -68,7 +68,7 @@ class BaseService
         $status = 1;
         try {
             if (!$validate->check($data)) {
-                $this->exception(Lang::get('common_param_error'), ResponseCode::SYS_PARAMS_ERROR);
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $page       = $data['page'] ?? 1;
             $page_size  = $data['page_size'] ?? 20;
@@ -115,7 +115,7 @@ class BaseService
         $status = 1;
         try {
             if (!$validate->check($data)) {
-                $this->exception(Lang::get('common_param_error'), ResponseCode::SYS_PARAMS_ERROR);
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $id = $data['id'];
 
@@ -157,7 +157,7 @@ class BaseService
         $status = 1;
         try {
             if (!$validate->check($data)) {
-                $this->exception(Lang::get('common_param_error'), ResponseCode::SYS_PARAMS_ERROR);
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $id = $data['id'];
 
@@ -193,7 +193,7 @@ class BaseService
         $status = 1;
         try {
             if (!$validate->check($data)) {
-                $this->exception(Lang::get('common_param_error'), ResponseCode::SYS_PARAMS_ERROR);
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $id = $data['id'] ?? 0;
 
@@ -233,7 +233,7 @@ class BaseService
         $status = 1;
         try {
             if (!$validate->check($data)) {
-                $this->exception(Lang::get('common_param_error'), ResponseCode::SYS_PARAMS_ERROR);
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $id = $data['id'] ?? 0;
 

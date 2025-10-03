@@ -3,8 +3,8 @@ declare (strict_types = 1);
 
 namespace app\middleware;
 
-use app\common\lib\Auth;
-use app\common\lib\ResponseCode;
+use app\common\lib\cls_auth;
+use app\common\lib\cls_response;
 use app\common\traits\ResponseJson;
 use think\facade\Lang;
 
@@ -26,9 +26,9 @@ class AuthMiddleware
             return $this->invalid_params();
         }
         $token = str_replace('Bearer ','', $auth);
-        $status = Auth::checkToken($token, $ret_data);
+        $status = cls_auth::check_token($token, $ret_data);
         if($status < 0) {
-            return $this->error(Lang::get('common_no_auth'), ResponseCode::SYS_TOKEN_INVALID);
+            return $this->error(Lang::get('common_no_auth'), cls_response::SYS_TOKEN_INVALID);
         }
         if (!empty($ret_data['uid'])) {
             $request->auth = $ret_data['uid'];

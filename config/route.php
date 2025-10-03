@@ -28,7 +28,7 @@ return [
     'controller_layer'      => 'controller',
     // 空控制器名
     'empty_controller'      => 'Error',
-    // 是否使用控制器后缀, 若设为 true 值，则控制器需加后缀 Controller，例如：UserController.php
+    // 是否使用控制器后缀, 若设为 true 值，则控制器会加后缀 Controller，例如：UserController.php
     'controller_suffix'     => true,
     // 默认模块名（开启自动多模块有效）
     'default_module'        => 'index',

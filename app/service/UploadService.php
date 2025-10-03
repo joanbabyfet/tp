@@ -72,7 +72,6 @@ class UploadService extends BaseService
                 @chmod($upload_dir.'/'.$filename, 0777);
 
                 //同步到s3
-                $this->sync_upload($filename);
 
                 $filelink = ($dir_num > 0) ? $file_url."/{$dir}/{$filename}" : $file_url."/{$filename}";
                 if ($thumb_w > 0 || $thumb_h > 0)

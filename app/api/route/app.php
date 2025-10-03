@@ -16,14 +16,9 @@ Route::group(function() {
     Route::post('upload', 'Common/upload');
     Route::get('demo', 'Test/demo');
 
-    Route::group('adset', function () {
-        Route::get('/', 'AdSet/index');
-        Route::get('detail', 'AdSet/detail');
-    });
-
-    Route::group('ad', function () {
-        Route::get('/', 'Ad/index');
-        Route::get('detail', 'Ad/detail');
+    Route::group('article', function () {
+        Route::get('/', 'Article/index');
+        Route::get('detail', 'Article/detail');
     });
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',

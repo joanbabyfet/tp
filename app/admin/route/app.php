@@ -22,24 +22,14 @@ Route::group(function() {
     Route::post('upload', 'Common/upload');
     Route::get('demo', 'Test/demo');
 
-    Route::group('adset', function () {
-        Route::get('/', 'AdSet/index');
-        Route::get('detail', 'AdSet/detail');
-        Route::post('delete', 'AdSet/delete');
-        Route::post('add', 'AdSet/add');
-        Route::post('edit', 'AdSet/edit');
-        Route::post('enable', 'AdSet/enable');
-        Route::post('disable', 'AdSet/disable');
-    });
-
-    Route::group('ad', function () {
-        Route::get('/', 'Ad/index');
-        Route::get('detail', 'Ad/detail');
-        Route::post('delete', 'Ad/delete');
-        Route::post('add', 'Ad/add');
-        Route::post('edit', 'Ad/edit');
-        Route::post('enable', 'Ad/enable');
-        Route::post('disable', 'Ad/disable');
+    Route::group('article', function () {
+        Route::get('/', 'Article/index');
+        Route::get('detail', 'Article/detail');
+        Route::post('delete', 'Article/delete');
+        Route::post('add', 'Article/add');
+        Route::post('edit', 'Article/edit');
+        Route::post('enable', 'Article/enable');
+        Route::post('disable', 'Article/disable');
     });
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',
