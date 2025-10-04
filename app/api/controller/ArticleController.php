@@ -3,16 +3,16 @@ declare (strict_types = 1);
 
 namespace app\api\controller;
 
-use app\service\ArticleService;
+use app\common\service\ArticleService;
 use think\facade\Cache;
 
 class ArticleController extends BaseController
 {
-    protected $service;
-    public function __construct()
+    protected $articleService;
+    public function __construct(ArticleService $articleServic)
     {
         parent::__construct();
-        $this->service = new ArticleService(); //实例化服务
+        $this->articleService = $articleServic; //实例化服务
     }
 
     /**
@@ -31,9 +31,9 @@ class ArticleController extends BaseController
             'page_size' => $page_size,
             'where'     => $where,
         ];
-        $status = $this->service->get_list($data, $ret_data);
+        $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
         return $this->success($ret_data);
     }
@@ -53,7 +53,7 @@ class ArticleController extends BaseController
         $res = Cache::store('redis')->get($cache_key);
         if(empty($res)) {
             //获取详情
-            $this->service->detail(['id' => $id], $res);
+            $this->articleService->detail(['id' => $id], $res);
             //写入缓存
             Cache::store('redis')->set($cache_key, $res);
         }

@@ -3,16 +3,16 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-use app\service\ArticleService;
+use app\common\service\ArticleService;
 use think\facade\Cache;
 
 class ArticleController extends BaseController
 {
-    protected $service;
-    public function __construct()
+    protected $articleService;
+    public function __construct(ArticleService $articleService)
     {
         parent::__construct();
-        $this->service = new ArticleService(); //实例化服务
+        $this->articleService = $articleService;
     }
 
     /**
@@ -35,9 +35,9 @@ class ArticleController extends BaseController
             'page_size' => $page_size,
             'where'     => $where,
         ];
-        $status = $this->service->get_list($data, $ret_data);
+        $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
         return $this->success($ret_data);
     }
@@ -53,9 +53,9 @@ class ArticleController extends BaseController
             return $this->invalid_params();
         }
 
-        $status = $this->service->detail(['id' => $id], $ret_data);
+        $status = $this->articleService->detail(['id' => $id], $ret_data);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
         return $this->success($ret_data);
     }
@@ -69,9 +69,9 @@ class ArticleController extends BaseController
     {
         $data = request()->post();
 
-        $status = $this->service->edit($data);
+        $status = $this->articleService->edit($data);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
         return $this->success();
     }
@@ -85,9 +85,9 @@ class ArticleController extends BaseController
     {
         $data = request()->post();
 
-        $status = $this->service->edit($data);
+        $status = $this->articleService->edit($data);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
 
         //干掉緩存
@@ -109,9 +109,9 @@ class ArticleController extends BaseController
             return $this->invalid_params();
         }
 
-        $status = $this->service->del(['id' => $id]);
+        $status = $this->articleService->del(['id' => $id]);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
 
         //干掉緩存
@@ -133,9 +133,9 @@ class ArticleController extends BaseController
             return $this->invalid_params();
         }
 
-        $status = $this->service->enable(['id' => $id]);
+        $status = $this->articleService->enable(['id' => $id]);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
 
         //干掉緩存
@@ -157,9 +157,9 @@ class ArticleController extends BaseController
             return $this->invalid_params();
         }
 
-        $status = $this->service->disable(['id' => $id]);
+        $status = $this->articleService->disable(['id' => $id]);
         if($status < 0) {
-            return $this->error($this->service->get_err_msg($status), $status);
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
 
         //干掉緩存

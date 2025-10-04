@@ -1,5 +1,5 @@
 <?php
-namespace app\service;
+namespace app\common\service;
 
 use Google\Auth\ApplicationDefaultCredentials;
 use GuzzleHttp\Client;

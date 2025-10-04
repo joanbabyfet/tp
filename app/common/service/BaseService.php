@@ -1,7 +1,7 @@
 <?php
 declare (strict_types = 1);
 
-namespace app\service;
+namespace app\common\service;
 
 use app\common\lib\cls_response;
 use think\facade\Lang;
@@ -12,11 +12,6 @@ class BaseService
     protected $model;
     public static $unknow_err_status = -1211; //未知错误,一般都是数据库死锁
     public static $msg_maps = []; //错误映射
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * 抛异常封装

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\service\pay\strategy;
+namespace app\common\service\pay\strategy;
 
-use app\service\BaseService;
-use app\service\pay\PayStrategy;
+use app\common\service\BaseService;
+use app\common\service\pay\PayStrategy;
 use GuzzleHttp\Client;
 use think\facade\Lang;
 use think\facade\Log;

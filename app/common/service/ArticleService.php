@@ -1,19 +1,21 @@
 <?php
 declare (strict_types = 1);
 
-namespace app\service;
+namespace app\common\service;
 
 use app\common\lib\cls_response;
 use app\model\ArticleModel;
 use think\facade\Lang;
 use think\facade\Validate;
 
+/**
+ * 自定义文章服务类
+ */
 class ArticleService extends BaseService
 {
     protected $model;
     public function __construct()
     {
-        parent::__construct();
         $this->model = new ArticleModel();
     }
 

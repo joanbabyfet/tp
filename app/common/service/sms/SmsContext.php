@@ -1,6 +1,6 @@
 <?php
 
-namespace app\service\sms;
+namespace app\common\service\sms;
 
 /**
  * 定义环境类, 当需要添加新的方式时，只需要添加具体的策略类，而无需修改环境类和客户端代码

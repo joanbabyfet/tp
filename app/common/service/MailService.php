@@ -1,7 +1,7 @@
 <?php
 declare (strict_types = 1);
 
-namespace app\service;
+namespace app\common\service;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

@@ -1,9 +1,10 @@
 <?php
 
-namespace app\service\sms;
+namespace app\common\service\sms;
 
-use app\service\sms\strategy\SpugStrategy;
-use app\service\sms\strategy\UnimtxStrategy;
+
+use app\common\service\sms\strategy\SpugStrategy;
+use app\common\service\sms\strategy\UnimtxStrategy;
 
 /**
  * 工厂类, 統一管理所有具体策略类, 包含一个静态方法，根据传入的参数，返回一个具体策略类的实例

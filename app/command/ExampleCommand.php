@@ -19,8 +19,10 @@ class ExampleCommand extends Command
 
     protected function execute(Input $input, Output $output)
     {
+        $this->service->edit($data);
+
         $data = [
-            'title' => '我是广告11'
+            'title' => '我是标题'
         ];
         $ad_model = new AdModel;
         $ad_model->save($data, ['id' => 1]);

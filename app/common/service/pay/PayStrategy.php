@@ -1,6 +1,6 @@
 <?php
 
-namespace app\service\pay;
+namespace app\common\service\pay;
 
 /**
  * 定义抽象策略接口
