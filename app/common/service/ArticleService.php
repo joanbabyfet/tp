@@ -31,7 +31,7 @@ class ArticleService extends BaseService
             'id'        => 'string',
             'title'     => 'require|string',
             'content'   => 'require|string',
-            'status'    => 'require|string',
+            'status'    => 'require|integer',
         ]);
 
         $status = 1;

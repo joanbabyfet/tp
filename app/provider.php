@@ -1,4 +1,6 @@
 <?php
+
+use app\common\service\ArticleService;
 use app\ExceptionHandle;
 use app\Request;
 
@@ -6,4 +8,5 @@ use app\Request;
 return [
     'think\Request'          => Request::class,
     'think\exception\Handle' => ExceptionHandle::class,
+    'article'                => ArticleService::class,
 ];
