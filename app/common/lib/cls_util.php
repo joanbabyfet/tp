@@ -138,7 +138,7 @@ class cls_util
      */
     public static function get_area_code()
     {
-        $data = json_decode(config('myconfig.area_code'), true);
+        $data = json_decode(config('config.area_code'), true);
         $china = [
             'cname' => '中国',
             'ename' => 'china',
@@ -162,7 +162,7 @@ class cls_util
         {
             return $img;
         }
-        $img_url = config('myconfig.file_url')."/{$dir}/{$img}";
+        $img_url = config('config.file_url')."/{$dir}/{$img}";
         return $img_url;
     }
 
@@ -792,21 +792,6 @@ class cls_util
     }
 
     /**
-     * 时间戳转日期格式
-     * @param $time
-     * @param $format
-     * @return string
-     */
-    public static function datetime($time, $format = 'Y-m-d H:i:s')
-    {
-        if (empty($time)) {
-            return '--';
-        }
-        $time = is_numeric($time) ? $time : strtotime($time);
-        return date($format, $time);
-    }
-
-    /**
      * 判断是否手机端
      * @return bool
      */
@@ -1031,5 +1016,86 @@ class cls_util
         }
 
         return true;
+    }
+
+    /**
+     * 不同时区时间转换
+     * @param  array  $data
+     * pub_func::time_convert([
+     *      'datetime'      => KALI_TIMESTAMP,//可以是时间格式或者时间戳
+     *      'from_timezone' => 'ETC/GMT-7',//默认为系统设置的时区，即 ETC/GMT
+     *      'to_timezone'   => 'ETC/GMT-8',//转换成为的时区，默认获取用户所在国家对应时区
+     *      'format'        => ''//格式化输出字符串。默认为Y-m-d H:i:s
+     * ]);
+     *
+     * 一般直接使用 pub_func::time_convert(['datetime' => xxxxx]);
+     * @return string
+     */
+    public static function time_convert($data = [])
+    {
+        if( empty($data['datetime']) )
+        {
+            if( isset($data['default']) ){
+                return $data['default'];
+            }
+            return '-';
+        }
+        else if( empty($data['to_timezone']) && defined('COUNTRY') )//获取用户所在国家对应时区
+        {
+            $timezones = config('timezone');
+            if( isset($timezones[COUNTRY]) )
+            {
+                $data['to_timezone'] = $timezones[COUNTRY];
+            }
+        }
+
+        $timezone_set  = date_default_timezone_get();
+        $datetime      = empty($data['datetime']) ? time() : $data['datetime'];
+        $datetime      = is_numeric($datetime) ? '@'.$datetime : $datetime;
+        $from_timezone = empty($data['from_timezone']) ? $timezone_set : $data['from_timezone'];
+        $to_timezone   = empty($data['to_timezone']) ? 'ETC/GMT-7' : $data['to_timezone'];
+        $format        = empty($data['format']) ? 'Y-m-d H:i:s' : $data['format'];
+
+        $date_obj = new \DateTime($datetime, new \DateTimeZone($from_timezone));
+        $date_obj->setTimezone(new \DateTimeZone($to_timezone));
+        return $date_obj->format($format);
+    }
+
+    //时期转时间戳
+    public static function date_convert_timestamp($date, $timezone = null)
+    {
+        if(empty($timezone))
+        {
+            return strtotime($date);
+        }
+        $timezone = new \DateTimeZone($timezone);
+        $date_obj = new \DateTime($date, $timezone);
+        $time = $date_obj->format('U');
+
+        return $time;
+    }
+
+    //时间戳转日期时间
+    public static function datetime($time, $timezone=null, $format='Y/m/d H:i')
+    {
+        if(empty($timezone))
+        {
+            $timezone = config('config.to_timezone');
+        }
+
+        $dis_time = self::time_convert([
+            'datetime'      => $time,//可以是时间格式或者时间戳
+            'format'        => $format,//格式化输出字符串。默认为Y-m-d H:i:s
+            'default'       => '',
+            'to_timezone'   => $timezone
+        ]);
+
+        return $dis_time;
+    }
+
+    //时间戳转日期
+    public static function date($time, $timezone=null, $format='Y/m/d')
+    {
+        return self::datetime($time, $timezone, $format);
     }
 }

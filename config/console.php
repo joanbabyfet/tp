@@ -5,6 +5,6 @@
 return [
     // 指令定义
     'commands' => [
-        'add:article' => 'app\command\ArticleCommand'
+        'article:add' => 'app\command\ArticleCommand'
     ],
 ];

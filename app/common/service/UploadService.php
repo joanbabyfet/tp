@@ -16,15 +16,15 @@ class UploadService extends BaseService
      */
     public function upload($file, array $data, &$ret_data=[])
     {
-        $file_url = config('myconfig.file_url');
+        $file_url = config('config.file_url');
 
         $status = 1;
         try {
             $dir = $data['dir'] ?? 'image';
             $thumb_w = empty($data['thumb_w']) ? 0 : (int)$data['thumb_w'];
             $thumb_h = empty($data['thumb_h']) ? 0 : (int)$data['thumb_h'];
-            $max_size = 1024 * 1024 * config('myconfig.upload_max_size'); //5M默认，这里只是上传限制，还需要修改你的php.ini文件
-            $dir_num = config('myconfig.dir_num'); //上传目录数量
+            $max_size = 1024 * 1024 * config('config.upload_max_size'); //5M默认，这里只是上传限制，还需要修改你的php.ini文件
+            $dir_num = config('config.dir_num'); //上传目录数量
             $upload_dir = app()->getRootPath() . 'public/uploads'."/{$dir}";
 
             // 目录不存在则生成
@@ -37,7 +37,7 @@ class UploadService extends BaseService
             $realname = $file->getOriginalName(); //原文件名 testimg.jpg
             $file_ext = $file->getOriginalExtension();  //扩展名 jpg
             $tmp_name  = $file->getRealPath(); //临时文件名 /Applications/MAMP/tmp/php/php1Z8ML9
-            $allow_exts = explode('|', config('myconfig.allow_exts'));
+            $allow_exts = explode('|', config('config.allow_exts'));
             if (!in_array($file_ext, $allow_exts))
             {
                 $this->exception('上传的文件格式不符合规定', -3);
@@ -116,8 +116,8 @@ class UploadService extends BaseService
      */
     private function thumb( $upload_dir, $filename, $file_ext = 'jpg', $thumb_w = 0, $thumb_h = 0 )
     {
-        $file_url = config('myconfig.file_url');
-        $dir_num = config('myconfig.dir_num'); //上传目录数量
+        $file_url = config('config.file_url');
+        $dir_num = config('config.dir_num'); //上传目录数量
         $filelink = '';
 
         $status = 1;

@@ -14,7 +14,7 @@ class SpugStrategy extends BaseService implements SmsStrategy
 {
     public function send($phone, $code)
     {
-        $spug_id     = config('myconfig.spug_id'); //模板编号
+        $spug_id     = config('config.spug_id'); //模板编号
 
         $status = 1;
         try {

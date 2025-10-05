@@ -18,7 +18,7 @@ class IpFilterMiddleware
     public function handle($request, \Closure $next)
     {
         // 如果IP在黑名单里面，而且不在白名单里面
-        if (in_array($request->ip(), config('myconfig.ip_blacklist')) && !in_array($request->ip(), config('myconfig.ip_whitelist')))
+        if (in_array($request->ip(), config('config.ip_blacklist')) && !in_array($request->ip(), config('config.ip_whitelist')))
         {
             return \json([
                 'code'      => cls_response::SYS_NO_PERMISSION,

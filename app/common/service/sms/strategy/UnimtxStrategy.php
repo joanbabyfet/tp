@@ -14,8 +14,8 @@ class UnimtxStrategy extends BaseService implements SmsStrategy
 {
     public function send($phone, $code)
     {
-        $access_key     = config('myconfig.unimtx.access_key'); //开发者ID
-        $access_secret  = config('myconfig.unimtx.access_secret'); //密钥
+        $access_key     = config('config.unimtx.access_key'); //开发者ID
+        $access_secret  = config('config.unimtx.access_secret'); //密钥
 
         $status = 1;
         try {

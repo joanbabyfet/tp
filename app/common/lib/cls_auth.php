@@ -9,7 +9,7 @@ class cls_auth
 {
     public static function create_token($uid)
     {
-        $key = config('myconfig.jwt_secret'); //私钥
+        $key = config('config.jwt_secret'); //私钥
         $now = time();
         $payload = [
             'iss' => '',            //签发者, 可为空
@@ -29,7 +29,7 @@ class cls_auth
 
     public static function check_token(string $token, &$ret_data = [])
     {
-        $key = config('myconfig.jwt_secret'); //私钥
+        $key = config('config.jwt_secret'); //私钥
 
         $status = 1;
         try {

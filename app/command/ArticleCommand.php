@@ -14,7 +14,7 @@ class ArticleCommand extends Command
     protected function configure()
     {
         //命令名称及用途描述
-        $this->setName('add:article')
+        $this->setName('article:add')
             ->setDescription('example command for a schedule task');
     }
 

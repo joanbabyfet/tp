@@ -15,7 +15,7 @@ class PushService extends BaseService
      */
     public function send($data, &$ret_data = [])
     {
-        $project_id     = config('myconfig.firebase.project_id'); //项目ID
+        $project_id     = config('config.firebase.project_id'); //项目ID
 
         $status = 1;
         try {
@@ -65,7 +65,7 @@ class PushService extends BaseService
 
     private function getAccessToken()
     {
-        $keyPath = config('myconfig.firebase.key_path');
+        $keyPath = config('config.firebase.key_path');
         putenv('GOOGLE_APPLICATION_CREDENTIALS='. $keyPath);
         $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
         $auth = ApplicationDefaultCredentials::getCredentials($scopes);

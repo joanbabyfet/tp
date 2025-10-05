@@ -16,7 +16,7 @@ class TgService extends BaseService
      */
     public function send($chat_id, $text, &$ret_data = [])
     {
-        $token     = config('myconfig.telegram.token');
+        $token     = config('config.telegram.token');
 
         $status = 1;
         try {
