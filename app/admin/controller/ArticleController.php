@@ -3,16 +3,21 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
+use app\common\service\AdminOplogService;
 use app\common\service\ArticleService;
 use think\facade\Cache;
 
 class ArticleController extends BaseController
 {
     protected $articleService;
-    public function __construct(ArticleService $articleService)
+    protected $adminOplogService;
+    public function __construct(
+        ArticleService $articleService,
+        AdminOplogService $adminOplogService)
     {
         parent::__construct();
         $this->articleService = $articleService;
+        $this->adminOplogService = $adminOplogService;
     }
 
     /**
@@ -69,10 +74,13 @@ class ArticleController extends BaseController
     {
         $data = request()->post();
 
-        $status = $this->articleService->edit($data);
+        $status = $this->articleService->edit($data, $ret_data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
+        //写入操作日志
+        $this->adminOplogService->save("文章添加 {$ret_data}");
+
         return $this->success();
     }
 
@@ -93,6 +101,9 @@ class ArticleController extends BaseController
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $data['id']);
         Cache::store('redis')->delete($cache_key);
+
+        //写入操作日志
+        $this->adminOplogService->save("文章修改 {$data['id']}");
 
         return $this->success();
     }
@@ -118,6 +129,9 @@ class ArticleController extends BaseController
         $cache_key = sprintf("article:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
 
+        //写入操作日志
+        $this->adminOplogService->save("文章删除 {$id}");
+
         return $this->success();
     }
 
@@ -142,6 +156,9 @@ class ArticleController extends BaseController
         $cache_key = sprintf("article:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
 
+        //写入操作日志
+        $this->adminOplogService->save("文章启用 {$id}");
+
         return $this->success();
     }
 
@@ -165,6 +182,9 @@ class ArticleController extends BaseController
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $id);
         Cache::store('redis')->delete($cache_key);
+
+        //写入操作日志
+        $this->adminOplogService->save("文章禁用 {$id}");
 
         return $this->success();
     }

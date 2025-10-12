@@ -4,12 +4,15 @@ declare (strict_types = 1);
 namespace app\admin\controller;
 
 use app\common\lib\cls_auth;
+use app\common\service\AdminLoginService;
 
 class IndexController extends BaseController
 {
-    public function __construct()
+    protected $adminLoginService;
+    public function __construct(AdminLoginService $adminLoginService)
     {
         parent::__construct();
+        $this->adminLoginService = $adminLoginService;
     }
 
     public function index()
@@ -19,11 +22,21 @@ class IndexController extends BaseController
 
     public function login()
     {
-        $uid = '72318b522cf851248e683edb9e1a2a92';
+        $uid = '1';
+        $username = 'admin';
         $token = cls_auth::create_token($uid);
         $info = [
             'token' => $token
         ];
+
+        //登录成功
+        $data = [
+            'uid'       => $uid,
+            'username'  => $username,
+        ];
+        //写入登录日志
+        $this->adminLoginService->save($data, 1);
+
         return $this->success($info);
     }
 }

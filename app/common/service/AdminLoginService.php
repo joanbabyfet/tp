@@ -1,0 +1,67 @@
+<?php
+
+namespace app\common\service;
+
+use app\common\lib\cls_response;
+use app\model\AdminLoginModel;
+use think\facade\Lang;
+use think\facade\Session;
+use think\facade\Validate;
+
+class AdminLoginService extends BaseService
+{
+    protected $model;
+    public function __construct()
+    {
+        $this->model = new AdminLoginModel();
+    }
+
+    //保存登录日志
+    public function save($data, $login_status)
+    {
+        //参数过滤
+        $validate = Validate::rule([
+            'uid'       => 'require|string',
+            'username'  => 'require|string',
+        ]);
+
+        $status = 1;
+        try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $uid = $data['uid'] ?? '0';
+            $username = $data['username'];
+            $login_ip = request()->ip();
+            $cli_hash = md5($username.'-'.$login_ip);
+            $now = time();
+
+            //组装数据
+            $save_data = [
+                'uid'           => $uid,
+                'username'      => $username,
+                'session_id'    => Session::getId(), //web场景使用
+                'agent'         => request()->header('User-Agent'),
+                'login_time'    => $now,
+                'login_ip'      => request()->ip(),
+                'login_country' => request()->country(),
+                'login_status'  => $login_status,   //登录时状态 1=成功，0=失败
+                'cli_hash'      => $cli_hash, //用户登录名和ip的hash
+            ];
+
+            //添加=
+            $this->model->save($save_data);
+        }
+        catch (\Exception $e) {
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+                'data'    => $data
+            ]);
+        }
+        return $status;
+    }
+}
