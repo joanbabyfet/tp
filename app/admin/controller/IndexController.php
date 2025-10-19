@@ -3,16 +3,17 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-use app\common\lib\cls_auth;
-use app\common\service\AdminLoginService;
+use app\common\service\AdminService;
 
 class IndexController extends BaseController
 {
-    protected $adminLoginService;
-    public function __construct(AdminLoginService $adminLoginService)
+    protected $adminService;
+    public function __construct(
+        AdminService $adminService
+    )
     {
         parent::__construct();
-        $this->adminLoginService = $adminLoginService;
+        $this->adminService = $adminService;
     }
 
     public function index()
@@ -20,23 +21,18 @@ class IndexController extends BaseController
         return $this->success();
     }
 
+    /**
+     * 用户登录
+     * @return \think\response\Json
+     */
     public function login()
     {
-        $uid = '1';
-        $username = 'admin';
-        $token = cls_auth::create_token($uid);
-        $info = [
-            'token' => $token
-        ];
+        $data = request()->post();
 
-        //登录成功
-        $data = [
-            'uid'       => $uid,
-            'username'  => $username,
-        ];
-        //写入登录日志
-        $this->adminLoginService->save($data, 1);
-
-        return $this->success($info);
+        $status = $this->adminService->login($data, $ret_data);
+        if($status < 0) {
+            return $this->error($this->adminService->get_err_msg($status), $status);
+        }
+        return $this->success($ret_data);
     }
 }
