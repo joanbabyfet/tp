@@ -80,4 +80,41 @@ class ArticleService extends BaseService
         }
         return $status;
     }
+
+    /**
+     * 批量添加或更新
+     * @param array $data
+     * @return int|mixed
+     */
+    public function save_all(array $data)
+    {
+        //参数过滤
+        $validate = Validate::rule([
+            'data'             => 'require|array',
+            'data.*.title'     => 'require|string',
+            'data.*.content'   => 'require|string',
+            'data.*.status'    => 'require|integer',
+        ]);
+
+        $status = 1;
+        try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+
+            //批量添加或更新(带主键字段)
+            $this->model->saveAll($data['data']);
+        }
+        catch (\Exception $e) {
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+                'data'    => $data
+            ]);
+        }
+        return $status;
+    }
 }

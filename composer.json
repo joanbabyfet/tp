@@ -38,7 +38,8 @@
         "ext-openssl": "*",
         "topthink/think-worker": "^4.0",
         "topthink/think-view": "^2.0",
-        "topthink/think-captcha": "^3.0"
+        "topthink/think-captcha": "^3.0",
+        "poppy/faker": "^4.2"
     },
     "require-dev": {
         "topthink/think-dumper": "^1.0",

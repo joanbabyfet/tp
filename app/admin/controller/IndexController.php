@@ -27,9 +27,7 @@ class IndexController extends BaseController
      */
     public function login()
     {
-        $data = request()->post();
-
-        $status = $this->adminService->login($data, $ret_data);
+        $status = $this->adminService->login(request()->post(), $ret_data);
         if($status < 0) {
             return $this->error($this->adminService->get_err_msg($status), $status);
         }

@@ -20,6 +20,73 @@ class AdminService extends BaseService
         $this->adminLoginService = new AdminLoginService();
     }
 
+    /**
+     * 编辑
+     * @param array $data
+     * @return int|mixed
+     */
+    public function edit(array $data, &$ret_data = [])
+    {
+        //参数过滤
+        $validate = Validate::rule([
+            'id'        => 'string',
+            'username'  => 'require|string',
+            'password'  => 'require|string',
+            'realname'  => 'require|string',
+            'email'     => 'string',
+            'status'    => 'require|integer',
+        ]);
+
+        $status = 1;
+        try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $id     = $data['id'] ?? 0;
+            $email  = $data['email'] ?? '';
+
+            //组装数据
+            $save_data = [
+                'username'  => $data['username'],
+                'password'  => cls_util::get_password($data['password']),
+                'realname'  => $data['realname'],
+                'email'     => $email,
+                'status'    => $data['status'],
+            ];
+
+            if($id)
+            {
+                //更新
+                $up = array_merge($save_data, [
+                    'update_time'   => time()
+                ]);
+                $this->model->where('id', '=', $id)->update($up);
+            }
+            else
+            {
+                //添加
+                $add = array_merge($save_data, [
+                    'create_time'   => time()
+                ]);
+                $this->model->save($add);
+                $last_insert_id = cls_util::random(); //获取自增id
+
+                $ret_data = $last_insert_id;
+            }
+        }
+        catch (\Exception $e) {
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+                'data'    => $data
+            ]);
+        }
+        return $status;
+    }
+
     public function login($data, &$ret_data = [])
     {
         //参数过滤
@@ -39,8 +106,8 @@ class AdminService extends BaseService
             $where = [
                 'username' => $username
             ];
+
             $admin = $this->model->where($where)->find();
-            $admin = empty($admin) ? [] : $admin->toArray();
             if(empty($admin)) {
                 //写入登录失败日志
                 $log = [
@@ -51,12 +118,14 @@ class AdminService extends BaseService
 
                 $this->exception("用户名或密码无效", -1);
             }
+            $original_password = $admin->password;
+            $admin = $admin->hidden(['password'])->toArray(); //隐藏敏感信息字段
 
             if($admin['status'] == 0) {
                 $this->exception("用户禁用", -2);
             }
 
-            if(cls_util::get_password($password) != $admin['password']) {
+            if(cls_util::get_password($password) != $original_password) {
                 //写入登录失败日志
                 $log = [
                     'uid'       => $admin['id'],
@@ -82,12 +151,9 @@ class AdminService extends BaseService
             ];
             $this->adminLoginService->save($log, 1);
 
-            $ret_data = [
-                'id'        => $admin['id'],
-                'username'  => $admin['username'],
-                'realname'  => $admin['realname'],
-                'token'     => cls_auth::create_token($admin['id']),
-            ];
+            $ret_data = array_merge($admin, [
+                'token' => cls_auth::create_token($admin['id'])
+            ]);
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
