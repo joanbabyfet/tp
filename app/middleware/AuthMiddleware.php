@@ -21,7 +21,7 @@ class AuthMiddleware
      */
     public function handle($request, \Closure $next)
     {
-        $auth = $request->header('authorization');
+        $auth = $request->header('Authorization');
         if (empty($auth)) {
             return $this->invalid_params();
         }

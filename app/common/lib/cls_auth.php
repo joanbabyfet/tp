@@ -23,8 +23,8 @@ class cls_auth
             ]
         ];
         //签发jwt token, 对称加密用HS256算法
-        $token = JWT::encode($payload, $key, 'HS256');
-        return $token;
+        $jwt = JWT::encode($payload, $key, 'HS256');
+        return $jwt;
     }
 
     public static function check_token(string $token, &$ret_data = [])
@@ -33,6 +33,7 @@ class cls_auth
 
         $status = 1;
         try {
+            JWT::$leeway = 60; //当前时间减去60, 把时间留点余地
             //对称解密用HS256算法
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
             $ret_data = (array)$decoded->data;

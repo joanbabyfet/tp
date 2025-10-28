@@ -2,8 +2,8 @@
 
 namespace app\common\traits;
 
-use app\service\sms\SmsContext;
-use app\service\sms\SmsFactory;
+use app\common\service\sms\SmsContext;
+use app\common\service\sms\SmsFactory;
 
 trait SmsTrait
 {
@@ -11,7 +11,7 @@ trait SmsTrait
      * 发送短信验证码
      * @return \think\response\Json
      */
-    public function send_verify_code()
+    public function send_sms_code()
     {
         $phone = request()->post('phone');
         if(empty($phone)) {

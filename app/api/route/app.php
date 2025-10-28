@@ -21,6 +21,10 @@ Route::group(function() {
     Route::post('edit_pwd', 'User/edit_pwd')->middleware(['auth']);
     //Route::get('captcha/:id', '\think\captcha\CaptchaController@index');
     Route::get('captcha', 'Common/captcha');
+    Route::post('check_sms_code', 'Common/check_sms_code');
+    Route::post('send_sms_code', 'Common/send_sms_code');
+    Route::post('check_email_code', 'Common/check_email_code');
+    Route::post('send_email_code', 'Common/send_email_code');
 
     Route::group('article', function () {
         Route::get('/', 'Article/index');
