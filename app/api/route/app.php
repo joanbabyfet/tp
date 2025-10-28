@@ -18,6 +18,7 @@ Route::group(function() {
     Route::post('login', 'User/login');
     Route::post('register', 'User/register');
     Route::post('userinfo', 'User/userinfo')->middleware(['auth']);
+    Route::post('edit_pwd', 'User/edit_pwd')->middleware(['auth']);
     //Route::get('captcha/:id', '\think\captcha\CaptchaController@index');
     Route::get('captcha', 'Common/captcha');
 

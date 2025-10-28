@@ -17,7 +17,8 @@ use think\middleware\Throttle;
 
 Route::group(function() {
     Route::get('/', 'Index/index')->middleware(['lang', 'country_filter']);
-    Route::post('login', 'Index/login');
+    Route::post('login', 'Admin/login');
+    Route::post('edit_pwd', 'Admin/edit_pwd');
     Route::post('send_verify_code', 'Common/send_verify_code');
     Route::post('upload', 'Common/upload');
     Route::get('demo', 'Test/demo');

@@ -66,4 +66,17 @@ class UserController  extends BaseController
         }
         return $this->success($res);
     }
+
+    /**
+     * 修改密码
+     * @return \think\response\Json
+     */
+    public function edit_pwd()
+    {
+        $status = $this->userService->edit_pwd(request()->post());
+        if($status < 0) {
+            return $this->error($this->userService->get_err_msg($status), $status);
+        }
+        return $this->success();
+    }
 }

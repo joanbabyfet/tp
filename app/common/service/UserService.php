@@ -236,4 +236,64 @@ class UserService extends BaseService
         }
         return $status;
     }
+
+    /**
+     * 修改密码
+     * @param array $data
+     * @return int|mixed
+     */
+    public function edit_pwd(array $data)
+    {
+        //参数过滤
+        $validate = Validate::rule([
+            'password'          => 'require|string', //原密码
+            'new_password'      => 'require|string', //新密码
+            're_new_password'   => 'require|string', //重复新密码
+        ]);
+
+        $status = 1;
+        try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $password           = $data['password'];
+            $new_password       = $data['new_password'];
+            $re_new_password    = $data['re_new_password'];
+            $id                 = request()->auth;
+
+            //获取用户信息
+            $user = $this->model->find($id);
+            if(empty($user)) {
+                $this->exception('该用户不存在', -1);
+            }
+            $user = $user->toArray();
+
+            //两次密码不一致
+            if($new_password != $re_new_password) {
+                $this->exception(Lang::get('common_pwd_and_check_pwd_different_invalid'), -2);
+            }
+
+            //原密码错误
+            if(cls_util::get_password($password) != $user['password']) {
+                $this->exception(Lang::get('common_old_pwd_error'), -3);
+            }
+
+            //更新
+            $up = [
+                'password' => cls_util::get_password($new_password)
+            ];
+            $this->model->where('id', '=', $id)->update($up);
+        }
+        catch (\Exception $e) {
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+                'data'    => $data
+            ]);
+        }
+        return $status;
+    }
 }
