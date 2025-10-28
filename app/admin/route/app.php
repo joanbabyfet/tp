@@ -21,6 +21,7 @@ Route::group(function() {
     Route::post('send_verify_code', 'Common/send_verify_code');
     Route::post('upload', 'Common/upload');
     Route::get('demo', 'Test/demo');
+    Route::get('captcha', 'Common/captcha');
 
     Route::group('article', function () {
         Route::get('/', 'Article/index');

@@ -91,8 +91,9 @@ class AdminService extends BaseService
     {
         //参数过滤
         $validate = Validate::rule([
-            'username'  => 'require|string',
-            'password'  => 'require|string',
+            'username'      => 'require|string',
+            'password'      => 'require|string',
+            'verify_code'   => 'require|string', //图片验证码
         ]);
 
         $status = 1;
@@ -102,11 +103,16 @@ class AdminService extends BaseService
             }
             $username = $data['username'];
             $password = $data['password'];
+            $verify_code    = $data['verify_code'];
+
+            //先检测验证码
+            if(!captcha_check($verify_code)) {
+                $this->exception(Lang::get('common_verify_code_error'), -1);
+            }
 
             $where = [
                 'username' => $username
             ];
-
             $admin = $this->model->where($where)->find();
             if(empty($admin)) {
                 //写入登录失败日志

@@ -111,8 +111,9 @@ class UserService extends BaseService
     {
         //参数过滤
         $validate = Validate::rule([
-            'username'  => 'require|string',
-            'password'  => 'require|string',
+            'username'      => 'require|string',
+            'password'      => 'require|string',
+            'verify_code'   => 'require|string', //图片验证码
         ]);
 
         $status = 1;
@@ -120,8 +121,14 @@ class UserService extends BaseService
             if (!$validate->check($data)) {
                 $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
-            $username = $data['username'];
-            $password = $data['password'];
+            $username       = $data['username'];
+            $password       = $data['password'];
+            $verify_code    = $data['verify_code'];
+
+            //先检测验证码
+            if(!captcha_check($verify_code)) {
+                $this->exception(Lang::get('common_verify_code_error'), -1);
+            }
 
             $where = [
                 'username' => $username
@@ -135,13 +142,13 @@ class UserService extends BaseService
                 ];
                 $this->userLoginService->save($log, 0);
 
-                $this->exception("用户名或密码无效", -1);
+                $this->exception("用户名或密码无效", -2);
             }
             $original_password = $user->password;
             $user = $user->hidden(['password'])->toArray(); //隐藏敏感信息字段
 
             if($user['status'] == 0) {
-                $this->exception("用户禁用", -2);
+                $this->exception("用户禁用", -3);
             }
 
             if(cls_util::get_password($password) != $original_password) {
@@ -152,7 +159,7 @@ class UserService extends BaseService
                 ];
                 $this->userLoginService->save($log, 0);
 
-                $this->exception("用户名或密码无效", -3);
+                $this->exception("用户名或密码无效", -4);
             }
 
             //更新登录信息

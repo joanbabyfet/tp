@@ -7,6 +7,7 @@ namespace app\admin\controller;
 use app\common\service\UploadService;
 use app\common\traits\SmsTrait;
 use app\common\traits\UploadTrait;
+use think\captcha\facade\Captcha;
 
 class CommonController extends BaseController
 {
@@ -18,5 +19,16 @@ class CommonController extends BaseController
     {
         parent::__construct();
         $this->uploadService = $uploadService;
+    }
+
+    /**
+     * 获取图片验证码(api模式)
+     * @return \think\response\Json
+     */
+    public function captcha()
+    {
+        $captcha = Captcha::create();
+
+        return $this->success($captcha);
     }
 }
