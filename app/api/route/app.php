@@ -15,7 +15,9 @@ Route::group(function() {
     Route::get('/', 'Index/index');
     Route::post('upload', 'Common/upload');
     Route::get('demo', 'Test/demo');
-    Route::post('login', 'Index/login');
+    Route::post('login', 'User/login');
+    Route::post('register', 'User/register');
+    Route::post('userinfo', 'User/userinfo')->middleware(['auth']);
 
     Route::group('article', function () {
         Route::get('/', 'Article/index');
