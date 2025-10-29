@@ -2,29 +2,39 @@
 
 namespace app\common\service;
 
+use app\common\lib\cls_response;
 use GuzzleHttp\Client;
+use think\facade\Lang;
+use think\facade\Validate;
 
 class TgService extends BaseService
 {
     /**
      * 发送消息
-     * @param $chat_id
-     * @param $text
+     * @param array $data
      * @param $ret_data
      * @return int|mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function send($chat_id, $text, &$ret_data = [])
+    public function send(array $data, &$ret_data = [])
     {
-        $token     = config('config.telegram.token');
+        //参数过滤
+        $validate = Validate::rule([
+            'chat_id'   => 'require|string',
+            'text'      => 'require|string',
+        ]);
 
         $status = 1;
         try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $token     = config('config.telegram.token');
             $url    = 'https://api.telegram.org/bot' . $token . '/sendMessage';
             $headers = [];
             $param = [
-                'chat_id'   => $chat_id,
-                'text'      => $text,
+                'chat_id'   => $data['chat_id'],
+                'text'      => $data['text'],
             ];
 
             $client = new Client();
@@ -50,7 +60,7 @@ class TgService extends BaseService
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

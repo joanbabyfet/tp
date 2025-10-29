@@ -2,9 +2,11 @@
 
 namespace app\common\service\sms\strategy;
 
+use app\common\lib\cls_response;
 use app\common\service\BaseService;
 use app\common\service\sms\SmsStrategy;
 use think\facade\Lang;
+use think\facade\Validate;
 use Uni\UniClient;
 
 /**
@@ -12,13 +14,24 @@ use Uni\UniClient;
  */
 class UnimtxStrategy extends BaseService implements SmsStrategy
 {
-    public function send($phone, $code)
+    public function send(array $data)
     {
-        $access_key     = config('config.unimtx.access_key'); //开发者ID
-        $access_secret  = config('config.unimtx.access_secret'); //密钥
+        //参数过滤
+        $validate = Validate::rule([
+            'phone'     => 'require|string',    //手机号
+            'code'      => 'require|string',    //短信验证码
+        ]);
 
         $status = 1;
         try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $access_key     = config('config.unimtx.access_key'); //开发者ID
+            $access_secret  = config('config.unimtx.access_secret'); //密钥
+            $phone      = $data['phone'];
+            $code       = $data['code'];
+
             $client = new UniClient([
                 'accessKeyId'       => $access_key,
                 'accessKeySecret'   => $access_secret, // 若使用简易验签模式请删除此行
@@ -47,7 +60,7 @@ class UnimtxStrategy extends BaseService implements SmsStrategy
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

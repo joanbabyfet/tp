@@ -7,5 +7,5 @@ namespace app\common\service\sms;
  */
 interface SmsStrategy
 {
-    public function send($phone, $code);
+    public function send(array $data);
 }

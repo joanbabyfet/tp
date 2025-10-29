@@ -3,8 +3,11 @@ declare (strict_types = 1);
 
 namespace app\common\service;
 
+use app\common\lib\cls_response;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use think\facade\Lang;
+use think\facade\Validate;
 
 class MailService extends BaseService
 {
@@ -37,15 +40,28 @@ class MailService extends BaseService
 
     /**
      * 发送邮件
-     * @param $to
-     * @param $subject
-     * @param $body
-     * @return bool
+     * @param array $data
+     * @return int|mixed
+     * @throws \Exception
      */
-    public function send($to, $subject, $body)
+    public function send(array $data)
     {
+        //参数过滤
+        $validate = Validate::rule([
+            'to'        => 'require|string',
+            'subject'   => 'require|string',
+            'body'      => 'require|string',
+        ]);
+
         $status = 1;
         try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $to         = $data['to'];
+            $subject    = $data['subject'];
+            $body       = $data['body'];
+
             $this->mail->addAddress($to);       // 添加收件人
             $this->mail->isHTML(true);   // 设置邮件内容为HTML格式
             $this->mail->Subject = $subject;
@@ -58,7 +74,7 @@ class MailService extends BaseService
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

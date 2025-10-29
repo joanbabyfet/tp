@@ -3,33 +3,47 @@
 namespace app\common\service\sms\strategy;
 
 
+use app\common\lib\cls_response;
 use app\common\service\BaseService;
 use app\common\service\sms\SmsStrategy;
 use GuzzleHttp\Client;
+use think\facade\Lang;
+use think\facade\Validate;
 
 /**
  * 创建具体策略类
  */
 class SpugStrategy extends BaseService implements SmsStrategy
 {
-    public function send($phone, $code)
+    public function send(array $data)
     {
-        $spug_id     = config('config.spug_id'); //模板编号
+        //参数过滤
+        $validate = Validate::rule([
+            'phone'     => 'require|string',    //手机号
+            'code'      => 'require|string',    //短信验证码
+        ]);
 
         $status = 1;
         try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $spug_id    = config('config.spug_id'); //模板编号
+            $phone      = $data['phone'];
+            $code       = $data['code'];
+
             $headers = [
                 'Content-Type'  => 'application/json',
             ];
             $param = [
-                'code'      => $code,
                 'targets'   => $phone,
+                'code'      => $code,
             ];
 
             $client = new Client();
             $res = $client->post('https://push.spug.cc/send/'.$spug_id, [
-                'headers' => $headers,
-                'json' => $param,
+                'headers'   => $headers,
+                'json'      => $param,
             ]);
             if(empty($res->getBody())) {
                 $this->exception('请求失败', -2);
@@ -49,7 +63,7 @@ class SpugStrategy extends BaseService implements SmsStrategy
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $data
             ]);
         }
         return $status;

@@ -15,8 +15,8 @@ class SmsContext
         $this->strategy = $smsStrategy;
     }
 
-    public function send($phone, $code)
+    public function send(array $data)
     {
-        return $this->strategy->send($phone, $code);
+        return $this->strategy->send($data);
     }
 }

@@ -44,7 +44,7 @@ class cls_auth
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'args'    => func_get_args()
+                'data'    => $token
             ]);
         }
         return $status;

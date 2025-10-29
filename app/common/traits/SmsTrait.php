@@ -22,7 +22,11 @@ trait SmsTrait
         //发送短信验证码
         $strategy = SmsFactory::strategy('unimtx'); //选择策略
         $smsContext = new SmsContext($strategy);
-        $status = $smsContext->send($phone, $code);
+        $data = [
+            'phone' => $phone,
+            'code'  => $code,
+        ];
+        $status = $smsContext->send($data);
         if($status < 0) {
             return $this->error($strategy->get_err_msg($status), $status);
         }
