@@ -2,8 +2,8 @@
 
 namespace app\job;
 
-use app\service\sms\SmsContext;
-use app\service\sms\SmsFactory;
+use app\common\service\sms\SmsContext;
+use app\common\service\sms\SmsFactory;
 use think\queue\Job;
 
 class SmsJob
@@ -34,11 +34,9 @@ class SmsJob
      */
     private function send($data)
     {
-        $phone  = $data['phone'];
-        $code   = $data['code'];
         $strategy = SmsFactory::strategy('unimtx'); //选择策略
         $smsContext = new SmsContext($strategy);
-        $status = $smsContext->send($phone, $code);
+        $status = $smsContext->send($data);
         return $status;
     }
 }

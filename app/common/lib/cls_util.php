@@ -698,7 +698,7 @@ class cls_util
     public static function roll($weight = [])
     {
         $total = array_sum($weight);
-        $random = rand(1, $total);
+        $random = mt_rand(1, $total);
         $tmp = 0;
         $roll_num = 0;
         foreach($weight as $k => $v)

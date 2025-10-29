@@ -1,8 +1,11 @@
 <?php
 namespace app\common\service;
 
+use app\common\lib\cls_response;
 use Google\Auth\ApplicationDefaultCredentials;
 use GuzzleHttp\Client;
+use think\facade\Lang;
+use think\facade\Validate;
 
 class PushService extends BaseService
 {
@@ -15,10 +18,21 @@ class PushService extends BaseService
      */
     public function send($data, &$ret_data = [])
     {
-        $project_id     = config('config.firebase.project_id'); //项目ID
+        //参数过滤
+        $validate = Validate::rule([
+            'token'     => 'require|string',
+            'title'     => 'require|string',
+            'body'      => 'require|string',
+            'image'     => 'require|string',
+            'data'      => 'array',             //选填
+        ]);
 
         $status = 1;
         try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $project_id     = config('config.firebase.project_id'); //项目ID
             $fcmUrl = "https://fcm.googleapis.com/v1/projects/${project_id}/messages:send";
             $headers = [
                 'Authorization' => 'Bearer ' . $this->getAccessToken(),
@@ -34,8 +48,8 @@ class PushService extends BaseService
                     ]
                 ],
             ];
-            if(!empty($val['data'])) {
-                $payload['message']['data'] = $val['data'];
+            if(!empty($data['data'])) {
+                $payload['message']['data'] = $data['data'];
             }
 
             $client = new Client();

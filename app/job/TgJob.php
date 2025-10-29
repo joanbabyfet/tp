@@ -2,7 +2,7 @@
 
 namespace app\job;
 
-use app\service\TgService;
+use app\common\service\TgService;
 use think\queue\Job;
 
 class TgJob
@@ -33,10 +33,8 @@ class TgJob
      */
     private function send($data)
     {
-        $chat_id  = $data['chat_id'];
-        $text   = $data['text'];
         $tgService = new TgService();
-        $status = $tgService->send($chat_id, $text);
+        $status = $tgService->send($data);
         return $status;
     }
 }

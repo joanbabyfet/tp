@@ -2,7 +2,7 @@
 
 namespace app\job;
 
-use app\service\PushService;
+use app\common\service\PushService;
 
 use think\queue\Job;
 
