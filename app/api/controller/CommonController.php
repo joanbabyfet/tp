@@ -65,11 +65,14 @@ class CommonController extends BaseController
             return $this->invalid_params();
         }
 
+        $tpl = config('config.text_tpl.login');
+        $text = str_replace('{{code}}', (string)$code, $tpl);
+
         $mail_service = new MailService();
         $data = [
             'to'        => $email,
-            'subject'   => 'XX平台',
-            'body'      => "<p>$code</p>",
+            'subject'   => config('config.app_name'),
+            'body'      => $text,
         ];
         $status = $mail_service->send($data);
         if($status < 0) {
