@@ -8,7 +8,7 @@ use app\common\lib\cls_util;
 /**
  * @mixin \think\Model
  */
-class UserActiveStat extends BaseModel
+class UserActiveStatModel extends BaseModel
 {
     protected $pk = 'id'; //设置主键
     protected $table = 'tp_user_active_stat'; //设置完整数据表名
