@@ -65,7 +65,7 @@ class CommonController extends BaseController
             return $this->invalid_params();
         }
 
-        $tpl = config('config.text_tpl.login');
+        $tpl = config('config.tpl.login');
         $text = str_replace('{{code}}', (string)$code, $tpl);
 
         $mail_service = new MailService();
