@@ -4,7 +4,6 @@ declare (strict_types = 1);
 namespace app\api\controller;
 
 use app\admin\controller\BaseController;
-use app\common\service\MailService;
 use app\common\service\UploadService;
 use app\common\traits\SmsTrait;
 use app\common\traits\UploadTrait;
@@ -68,13 +67,12 @@ class CommonController extends BaseController
         $tpl = config('config.tpl.login');
         $text = str_replace('{{code}}', (string)$code, $tpl);
 
-        $mail_service = new MailService();
         $data = [
             'to'        => $email,
             'subject'   => config('config.app_name'),
             'body'      => $text,
         ];
-        $status = $mail_service->send($data);
+        $status = app('mail')->send($data);
         if($status < 0) {
             return $this->error(Lang::get('common_send_fail'), -1);
         }

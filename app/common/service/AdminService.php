@@ -6,7 +6,6 @@ use app\common\lib\cls_auth;
 use app\common\lib\cls_response;
 use app\common\lib\cls_util;
 use app\job\AdminLoginJob;
-use app\job\UserLoginJob;
 use app\model\AdminModel;
 use think\facade\Lang;
 use think\facade\Queue;
@@ -172,9 +171,9 @@ class AdminService extends BaseService
             $agent          = request()->header('User-Agent');
 
             //先检测验证码
-//            if(!captcha_check($verify_code)) {
-//                $this->exception(Lang::get('common_verify_code_error'), -1);
-//            }
+            if(!captcha_check($verify_code)) {
+                $this->exception(Lang::get('common_verify_code_error'), -1);
+            }
 
             $where = [
                 'username' => $username
