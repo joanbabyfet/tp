@@ -5,8 +5,10 @@ namespace app\common\service;
 use app\common\lib\cls_auth;
 use app\common\lib\cls_response;
 use app\common\lib\cls_util;
+use app\job\UserLoginJob;
 use app\model\UserModel;
 use think\facade\Lang;
+use think\facade\Queue;
 use think\facade\Session;
 use think\facade\Validate;
 
@@ -124,6 +126,8 @@ class UserService extends BaseService
             $username       = $data['username'];
             $password       = $data['password'];
             $verify_code    = $data['verify_code'];
+            $login_ip       = request()->ip();
+            $agent          = request()->header('User-Agent');
 
             //先检测验证码
             if(!captcha_check($verify_code)) {
@@ -135,12 +139,15 @@ class UserService extends BaseService
             ];
             $user = $this->model->where($where)->find();
             if(empty($user)) {
-                //写入登录失败日志
+                //通过队列写入登录失败日志
                 $log = [
-                    'uid'       => '0',
-                    'username'  => $username,
+                    'uid'           => '0',
+                    'username'      => $username,
+                    'login_ip'      => $login_ip,
+                    'agent'         => $agent,
+                    'login_status'  => 0,
                 ];
-                $this->userLoginService->save($log, 0);
+                Queue::push(UserLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -2);
             }
@@ -152,12 +159,15 @@ class UserService extends BaseService
             }
 
             if(cls_util::get_password($password) != $original_password) {
-                //写入登录失败日志
+                //通过队列写入登录失败日志
                 $log = [
-                    'uid'       => $user['id'],
-                    'username'  => $user['username'],
+                    'uid'           => $user['id'],
+                    'username'      => $user['username'],
+                    'login_ip'      => $login_ip,
+                    'agent'         => $agent,
+                    'login_status'  => 0,
                 ];
-                $this->userLoginService->save($log, 0);
+                Queue::push(UserLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -4);
             }
@@ -170,12 +180,15 @@ class UserService extends BaseService
             ];
             $this->model->where('id', '=', $user['id'])->update($up);
 
-            //写入登录成功日志
+            //通过队列写入登录成功日志
             $log = [
-                'uid'       => $user['id'],
-                'username'  => $user['username'],
+                'uid'           => $user['id'],
+                'username'      => $user['username'],
+                'login_ip'      => $login_ip,
+                'agent'         => $agent,
+                'login_status'  => 1,
             ];
-            $this->userLoginService->save($log, 1);
+            Queue::push(UserLoginJob::class, $log, $queue = null);
 
             $ret_data = array_merge($user, [
                 'token' => cls_auth::create_token($user['id'])

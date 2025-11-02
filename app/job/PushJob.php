@@ -2,8 +2,6 @@
 
 namespace app\job;
 
-use app\common\service\PushService;
-
 use think\queue\Job;
 
 class PushJob
@@ -34,8 +32,7 @@ class PushJob
      */
     private function send($data)
     {
-        $push_service = new PushService();
-        $status = $push_service->send($data);
+        $status = app('push')->send($data);
         return $status;
     }
 }

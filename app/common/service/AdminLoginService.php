@@ -17,12 +17,15 @@ class AdminLoginService extends BaseService
     }
 
     //保存登录日志
-    public function save($data, $login_status)
+    public function save($data)
     {
         //参数过滤
         $validate = Validate::rule([
-            'uid'       => 'require|string',
-            'username'  => 'require|string',
+            'uid'           => 'require|string',
+            'username'      => 'require|string',
+            'login_ip'      => 'string',
+            'agent'         => 'string',
+            'login_status'  => 'require|integer',
         ]);
 
         $status = 1;
@@ -32,7 +35,9 @@ class AdminLoginService extends BaseService
             }
             $uid = $data['uid'] ?? '0';
             $username = $data['username'];
-            $login_ip = request()->ip();
+            $login_status = $data['login_status'] ?? 0;
+            $login_ip = $data['login_ip'] ?? '';
+            $agent    = $data['agent'] ?? '';
             $cli_hash = md5($username.'-'.$login_ip);
             $now = time();
 
@@ -41,9 +46,9 @@ class AdminLoginService extends BaseService
                 'uid'           => $uid,
                 'username'      => $username,
                 'session_id'    => Session::getId(), //web场景使用
-                'agent'         => request()->header('User-Agent'),
+                'agent'         => $agent,
                 'login_time'    => $now,
-                'login_ip'      => request()->ip(),
+                'login_ip'      => $login_ip,
                 'login_country' => request()->country(),
                 'login_status'  => $login_status,   //登录时状态 1=成功，0=失败
                 'cli_hash'      => $cli_hash, //用户登录名和ip的hash

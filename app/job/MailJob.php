@@ -2,7 +2,6 @@
 
 namespace app\job;
 
-use app\common\service\MailService;
 use think\queue\Job;
 
 class MailJob
@@ -33,8 +32,7 @@ class MailJob
      */
     private function send($data)
     {
-        $mail_service = new MailService();
-        $status = $mail_service->send($data);
+        $status = app('mail')->send($data);
         return $status;
     }
 }

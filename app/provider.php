@@ -1,7 +1,10 @@
 <?php
 
-use app\common\service\AdminService;
+use app\common\service\AdminLoginService;
 use app\common\service\ArticleService;
+use app\common\service\MailService;
+use app\common\service\PushService;
+use app\common\service\TgService;
 use app\common\service\UserLoginService;
 use app\ExceptionHandle;
 use app\Request;
@@ -12,4 +15,8 @@ return [
     'think\exception\Handle' => ExceptionHandle::class,
     'article'                => ArticleService::class, //article为容器对象标识
     'user_login'             => UserLoginService::class,
+    'admin_login'            => AdminLoginService::class,
+    'mail'                   => MailService::class,
+    'push'                   => PushService::class,
+    'tg'                     => TgService::class,
 ];

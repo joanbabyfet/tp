@@ -5,8 +5,11 @@ namespace app\common\service;
 use app\common\lib\cls_auth;
 use app\common\lib\cls_response;
 use app\common\lib\cls_util;
+use app\job\AdminLoginJob;
+use app\job\UserLoginJob;
 use app\model\AdminModel;
 use think\facade\Lang;
+use think\facade\Queue;
 use think\facade\Session;
 use think\facade\Validate;
 
@@ -162,26 +165,31 @@ class AdminService extends BaseService
             if (!$validate->check($data)) {
                 $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
-            $username = $data['username'];
-            $password = $data['password'];
+            $username       = $data['username'];
+            $password       = $data['password'];
             $verify_code    = $data['verify_code'];
+            $login_ip       = request()->ip();
+            $agent          = request()->header('User-Agent');
 
             //先检测验证码
-            if(!captcha_check($verify_code)) {
-                $this->exception(Lang::get('common_verify_code_error'), -1);
-            }
+//            if(!captcha_check($verify_code)) {
+//                $this->exception(Lang::get('common_verify_code_error'), -1);
+//            }
 
             $where = [
                 'username' => $username
             ];
             $admin = $this->model->where($where)->find();
             if(empty($admin)) {
-                //写入登录失败日志
+                //通过队列写入登录失败日志
                 $log = [
-                    'uid'       => '0',
-                    'username'  => $username,
+                    'uid'           => '0',
+                    'username'      => $username,
+                    'login_ip'      => $login_ip,
+                    'agent'         => $agent,
+                    'login_status'  => 0,
                 ];
-                $this->adminLoginService->save($log, 0);
+                Queue::push(AdminLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -1);
             }
@@ -193,12 +201,15 @@ class AdminService extends BaseService
             }
 
             if(cls_util::get_password($password) != $original_password) {
-                //写入登录失败日志
+                //通过队列写入登录失败日志
                 $log = [
-                    'uid'       => $admin['id'],
-                    'username'  => $admin['username'],
+                    'uid'           => $admin['id'],
+                    'username'      => $admin['username'],
+                    'login_ip'      => $login_ip,
+                    'agent'         => $agent,
+                    'login_status'  => 0,
                 ];
-                $this->adminLoginService->save($log, 0);
+                Queue::push(AdminLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -3);
             }
@@ -211,12 +222,15 @@ class AdminService extends BaseService
             ];
             $this->model->where('id', '=', $admin['id'])->update($up);
 
-            //写入登录成功日志
+            //通过队列写入登录成功日志
             $log = [
-                'uid'       => $admin['id'],
-                'username'  => $admin['username'],
+                'uid'           => $admin['id'],
+                'username'      => $admin['username'],
+                'login_ip'      => $login_ip,
+                'agent'         => $agent,
+                'login_status'  => 1,
             ];
-            $this->adminLoginService->save($log, 1);
+            Queue::push(AdminLoginJob::class, $log, $queue = null);
 
             $ret_data = array_merge($admin, [
                 'token' => cls_auth::create_token($admin['id'])
