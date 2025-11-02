@@ -188,7 +188,7 @@ class AdminService extends BaseService
                     'agent'         => $agent,
                     'login_status'  => 0,
                 ];
-                Queue::push(AdminLoginJob::class, $log, $queue = null);
+                $is_push = Queue::push(AdminLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -1);
             }
@@ -208,7 +208,7 @@ class AdminService extends BaseService
                     'agent'         => $agent,
                     'login_status'  => 0,
                 ];
-                Queue::push(AdminLoginJob::class, $log, $queue = null);
+                $is_push = Queue::push(AdminLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -3);
             }
@@ -229,7 +229,7 @@ class AdminService extends BaseService
                 'agent'         => $agent,
                 'login_status'  => 1,
             ];
-            Queue::push(AdminLoginJob::class, $log, $queue = null);
+            $is_push = Queue::push(AdminLoginJob::class, $log, $queue = null);
 
             $ret_data = array_merge($admin, [
                 'token' => cls_auth::create_token($admin['id'])

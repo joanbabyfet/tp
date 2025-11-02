@@ -130,9 +130,9 @@ class UserService extends BaseService
             $agent          = request()->header('User-Agent');
 
             //先检测验证码
-            if(!captcha_check($verify_code)) {
-                $this->exception(Lang::get('common_verify_code_error'), -1);
-            }
+//            if(!captcha_check($verify_code)) {
+//                $this->exception(Lang::get('common_verify_code_error'), -1);
+//            }
 
             $where = [
                 'username' => $username
@@ -147,7 +147,7 @@ class UserService extends BaseService
                     'agent'         => $agent,
                     'login_status'  => 0,
                 ];
-                Queue::push(UserLoginJob::class, $log, $queue = null);
+                $is_push = Queue::push(UserLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -2);
             }
@@ -167,7 +167,7 @@ class UserService extends BaseService
                     'agent'         => $agent,
                     'login_status'  => 0,
                 ];
-                Queue::push(UserLoginJob::class, $log, $queue = null);
+                $is_push = Queue::push(UserLoginJob::class, $log, $queue = null);
 
                 $this->exception("用户名或密码无效", -4);
             }
@@ -180,7 +180,7 @@ class UserService extends BaseService
             ];
             $this->model->where('id', '=', $user['id'])->update($up);
 
-            //通过队列写入登录成功日志
+            //通过队列写入登录成功日志, database 驱动时，返回值为 自增id|false  ;   redis 驱动时，返回值为 随机字符串|false
             $log = [
                 'uid'           => $user['id'],
                 'username'      => $user['username'],
@@ -188,7 +188,7 @@ class UserService extends BaseService
                 'agent'         => $agent,
                 'login_status'  => 1,
             ];
-            Queue::push(UserLoginJob::class, $log, $queue = null);
+            $is_push = Queue::push(UserLoginJob::class, $log, $queue = null);
 
             $ret_data = array_merge($user, [
                 'token' => cls_auth::create_token($user['id'])
