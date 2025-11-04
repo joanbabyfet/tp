@@ -4,37 +4,63 @@ namespace app\common\lib;
 
 use think\facade\Cache;
 
+/**
+ * 遇锁立刻返回
+ * if(cls_redis_lock::lock(‘test’)) {
+ *  show_error();
+ *  return;
+ * }
+ * do_job();
+ * cls_redis_lock::unlock();
+ *
+ * 遇锁等待3秒
+ * if(cls_redis_lock::lock(‘test’, 3)) {
+ *  do_job();
+ *  cls_redis_lock::unlock(‘test’);
+ * }
+ */
 class cls_redis_lock
 {
     /**
      * 加锁
      * @param $name
-     * @param $timeout
-     * @param $expire
-     * @param $wait_interval_us
+     * @param int $timeout 循环获取锁的等待超时时间, 在此时间内会一直赏试获取锁直到超时
+     * @param int $expire 当前锁的最大超时时间, 必须大于0, 如果超过生存时间锁仍未被释放, 则系统会自动强制释放
+     * 获取锁失败后挂起再试的时间间隔
+     * @param int $wait_interval_us 获取锁失败后挂起再试的时间间隔
      * @return bool
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function lock($name, $timeout = 0, $expire = 15, $wait_interval_us = 100000)
     {
-        if ($name == null) return false;
+        if ($name == null) {
+            return false;
+        }
 
         //取得当前时间
         $now = time();
-        //获取锁失败时的等待超时时刻
-        $timeout_at = $now + $timeout;
-        //锁的最大生存时刻
-        $expire_at = $now + $expire;
+        $timeout_at = $now + $timeout;  //获取锁失败时的等待超时时刻
+        $expire_at = $now + $expire;    //锁的最大生存时刻
+        $redis = Cache::store('redis')->handler();
         $key = "lock:{$name}";
 
         while (true)
         {
             //将key的最大生存时刻存到redis里，过了这个时刻该锁会被自动释放
-            $result = Cache::store('redis')->set($key, $expire_at, ['nx' => true, 'ex' => $expire]);
+            $result = $redis->setnx($key, $expire_at);
             if ($result != false)
             {
                 //设置key的失效时间
-                Cache::store('redis')->set($key, $expire);
+                $redis->expire($key, $expire);
+                return true;
+            }
+
+            //以秒为单位, 返回给定key的剩余生存时间
+            //ttl小于0表示key上没有设置生存时间 (key是不会不存在的, 因前面setnx会自动创建)
+            //如果出现该情况, 那就是进程的某个实例setnx成功后 crash 导致紧跟著的expire没有被调用, 这时可以直接设置expire并把锁纳为己用
+            $ttl = $redis->ttl($key);
+            if($ttl < 0) {
+                $redis->set($key, $expire_at);
                 return true;
             }
 
@@ -59,11 +85,13 @@ class cls_redis_lock
      */
     public static function unlock($name)
     {
+        $redis = Cache::store('redis')->handler();
+
         //先判断是否存在此锁
         if ( self::is_locking($name) )
         {
             //删除锁
-            if(Cache::store('redis')->delete("Lock:$name"))
+            if($redis->del("lock:{$name}"))
             {
                 return true;
             }
@@ -80,13 +108,15 @@ class cls_redis_lock
      */
     public static function expire($name, $expire)
     {
+        $redis = Cache::store('redis')->handler();
+
         //先判断是否存在该锁
         if (self::is_locking($name))
         {
             //所指定的生存时间必须大于0
             $expire = max($expire, 1);
             //增加锁生存时间
-            if(Cache::store('redis')->set("Lock:$name", $expire))
+            if($redis->expire("lock:{$name}", $expire))
             {
                 return true;
             }
@@ -102,7 +132,9 @@ class cls_redis_lock
      */
     public static function is_locking($name)
     {
+        $redis = Cache::store('redis')->handler();
+
         //从redis返回该锁的生存时间
-        return Cache::store('redis')->get("Lock:$name");
+        return $redis->get("lock:{$name}");
     }
 }
