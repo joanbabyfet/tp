@@ -3,21 +3,18 @@ declare (strict_types = 1);
 
 namespace app\admin\controller;
 
-use app\common\service\AdminOplogService;
 use app\common\service\ArticleService;
+use app\event\AdminOplogEvent;
 use think\facade\Cache;
 
 class ArticleController extends BaseController
 {
     protected $articleService;
-    protected $adminOplogService;
     public function __construct(
-        ArticleService $articleService,
-        AdminOplogService $adminOplogService)
+        ArticleService $articleService)
     {
         parent::__construct();
         $this->articleService = $articleService;
-        $this->adminOplogService = $adminOplogService;
     }
 
     /**
@@ -79,7 +76,7 @@ class ArticleController extends BaseController
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
         //写入操作日志
-        $this->adminOplogService->save("文章添加 {$ret_data}");
+        event(new AdminOplogEvent("文章添加 {$ret_data}"));
 
         return $this->success();
     }
@@ -103,7 +100,7 @@ class ArticleController extends BaseController
         Cache::store('redis')->delete($cache_key);
 
         //写入操作日志
-        $this->adminOplogService->save("文章修改 {$data['id']}");
+        event(new AdminOplogEvent("文章修改 {$data['id']}"));
 
         return $this->success();
     }
@@ -130,7 +127,7 @@ class ArticleController extends BaseController
         Cache::store('redis')->delete($cache_key);
 
         //写入操作日志
-        $this->adminOplogService->save("文章删除 {$id}");
+        event(new AdminOplogEvent("文章删除 {$id}"));
 
         return $this->success();
     }
@@ -157,7 +154,7 @@ class ArticleController extends BaseController
         Cache::store('redis')->delete($cache_key);
 
         //写入操作日志
-        $this->adminOplogService->save("文章启用 {$id}");
+        event(new AdminOplogEvent("文章启用 {$id}"));
 
         return $this->success();
     }
@@ -184,7 +181,7 @@ class ArticleController extends BaseController
         Cache::store('redis')->delete($cache_key);
 
         //写入操作日志
-        $this->adminOplogService->save("文章禁用 {$id}");
+        event(new AdminOplogEvent("文章禁用 {$id}"));
 
         return $this->success();
     }

@@ -1,6 +1,7 @@
 <?php
 
 use app\common\service\AdminLoginService;
+use app\common\service\AdminOplogService;
 use app\common\service\ArticleService;
 use app\common\service\MailService;
 use app\common\service\PushService;
@@ -16,6 +17,7 @@ return [
     'article'                => ArticleService::class, //article为容器对象标识
     'user_login'             => UserLoginService::class,
     'admin_login'            => AdminLoginService::class,
+    'admin_oplog'            => AdminOplogService::class,
     'mail'                   => MailService::class,
     'push'                   => PushService::class,
     'tg'                     => TgService::class,
