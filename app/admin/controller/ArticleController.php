@@ -23,10 +23,10 @@ class ArticleController extends BaseController
      */
     public function index()
     {
-        $title = request()->param('title');
-        $status = request()->param('status');
-        $page   = request()->param('page', 1);
-        $page_size   = request()->param('page_size', 20);
+        $title      = request()->param('title');
+        $status     = request()->param('status');
+        $page       = request()->param('page', 1);
+        $page_size  = request()->param('page_size', 20);
 
         //筛选
         $where = [];
