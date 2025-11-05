@@ -66,7 +66,7 @@ return [
         'ETC/GMT+10' => '西十区',
         'ETC/GMT+11' => '西十一区',
     ],
-    'app_name'  => 'thinkphp',
+    'app_name'  => env('APP_NAME', ''),
     'tpl'   => [
         'login' => '【thinkphp】您的验证码是{{code}}，5分钟内效，请勿泄露',
     ]

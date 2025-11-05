@@ -7,9 +7,11 @@ use app\admin\controller\BaseController;
 use app\common\service\UploadService;
 use app\common\traits\SmsTrait;
 use app\common\traits\UploadTrait;
+use app\job\MailJob;
 use think\captcha\facade\Captcha;
 use think\facade\Cache;
 use think\facade\Lang;
+use think\facade\Queue;
 
 class CommonController extends BaseController
 {
@@ -72,8 +74,8 @@ class CommonController extends BaseController
             'subject'   => config('config.app_name'),
             'body'      => $text,
         ];
-        $status = app('mail')->send($data);
-        if($status < 0) {
+        $is_push = Queue::push(MailJob::class, $data, $queue = null);
+        if(!$is_push) {
             return $this->error(Lang::get('common_send_fail'), -1);
         }
         //写入缓存
@@ -105,6 +107,7 @@ class CommonController extends BaseController
         if(empty($info) || strtotime('-5 minute') > $info['time']) {
             return $this->error(Lang::get('common_verify_code_expired'), -1);
         }
+
         if($info['code'] != $verify_code) {
             return $this->error(Lang::get('common_verify_code_error'), -2);
         }
