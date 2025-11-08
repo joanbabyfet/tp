@@ -31,17 +31,20 @@ class UserActiveStatService extends BaseService
             $to_timezone = config('config.to_timezone');
             $from_date = empty($data['from_date']) ? '2019/01/01' : $data['from_date'];
             $from_time = cls_util::date_convert_timestamp("$from_date 00:00:00", $to_timezone); //需要转化的时区，东七区是越南时间
+            $now = time();
 
             //根据用户id与登入日期分组并去重, 只关注日期不关注时间
-
             $data = [
                 'date' => '2025/10/30',
                 'agent_id' => 'xxx',
                 'timezone' => 'ETC/GMT-8',
             ];
 
-            //添加或更新数据
-            $this->model->duplicate(['user_count' => 10, 'd1' => 1, 'd3' => 2, 'd7' => 3, 'd14' => 4, 'd30' => 5])->insert($data);
+            $update_fields = ['user_count', 'd1', 'd3', 'd7', 'd14', 'd30', 'update_time' => $now];
+
+            //唯一索引重复值则批量更新否则批量添加
+            $userActiveStatModel = new UserActiveStatModel();
+            $userActiveStatModel->duplicate($update_fields)->insertAll($data);
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
