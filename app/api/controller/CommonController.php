@@ -60,10 +60,16 @@ class CommonController extends BaseController
      */
     public function send_email_code()
     {
-        $code   = mt_rand(100000, 999999);    //生成6位随机数
-        $email  = request()->post('email');   //邮箱
-        if(empty($email)) {
+        $code               = mt_rand(100000, 999999);              //生成6位随机数
+        $email              = request()->post('email');             //邮箱
+        $img_verify_code    = request()->post('img_verify_code');   //图片验证码
+        if(empty($email) || empty($img_verify_code)) {
             return $this->invalid_params();
+        }
+
+        //先检测验证码(1次性)
+        if(!captcha_check($img_verify_code)) {
+            return $this->error(Lang::get('common_verify_code_error'), -1);
         }
 
         $tpl = config('config.tpl.login');
@@ -76,10 +82,10 @@ class CommonController extends BaseController
         ];
         $is_push = Queue::push(MailJob::class, $data, $queue = null);
         if(!$is_push) {
-            return $this->error(Lang::get('common_send_fail'), -1);
+            return $this->error(Lang::get('common_send_fail'), -2);
         }
         //写入缓存
-        $expire = 300; //发送短信间隔时间, 默认5分钟
+        $expire = 300;
         $cache_key = sprintf("email_verify_code:%s", $email);
         Cache::store('redis')->set($cache_key, [
             'code'  => $code,  //验证码

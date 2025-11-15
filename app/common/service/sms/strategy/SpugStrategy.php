@@ -20,7 +20,7 @@ class SpugStrategy extends BaseService implements SmsStrategy
         //参数过滤
         $validate = Validate::rule([
             'phone'     => 'require|string',    //手机号
-            'code'      => 'require|string',    //短信验证码
+            'code'      => 'require|integer',    //短信验证码
         ]);
 
         $status = 1;

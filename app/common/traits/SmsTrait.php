@@ -4,8 +4,10 @@ namespace app\common\traits;
 
 use app\common\service\sms\SmsContext;
 use app\common\service\sms\SmsFactory;
+use app\job\SmsJob;
 use think\facade\Cache;
 use think\facade\Lang;
+use think\facade\Queue;
 
 trait SmsTrait
 {
@@ -15,10 +17,17 @@ trait SmsTrait
      */
     public function send_sms_code()
     {
-        $code   = mt_rand(100000, 999999);    //生成6位随机数
-        $phone  = request()->post('phone');  //手机号
-        if(empty($phone)) {
+        $code               = mt_rand(100000, 999999);              //生成6位随机数
+        $phone              = request()->post('phone');             //手机号
+        $img_verify_code    = request()->post('img_verify_code');   //图片验证码
+
+        if(empty($phone) || empty($img_verify_code)) {
             return $this->invalid_params();
+        }
+
+        //先检测验证码(1次性)
+        if(!captcha_check($img_verify_code)) {
+            return $this->error(Lang::get('common_verify_code_error'), -1);
         }
 
         //检测发送次数是否超过限制
@@ -28,20 +37,18 @@ trait SmsTrait
             $info = Cache::store('redis')->get($cache_key);
             $count = $info['count'] + 1;
             if($count > 20) {
-                return $this->error('您当天累计已发送20次', -1);
+                return $this->error('您当天累计已发送20次', -2);
             }
         }
 
         //发送短信验证码
-        $strategy = SmsFactory::strategy('unimtx'); //选择策略
-        $smsContext = new SmsContext($strategy);
         $data = [
             'phone' => $phone,
             'code'  => $code,
         ];
-        $status = $smsContext->send($data);
-        if($status < 0) {
-            return $this->error($strategy->get_err_msg($status), $status);
+        $is_push = Queue::push(SmsJob::class, $data, $queue = null);
+        if(!$is_push) {
+            return $this->error(Lang::get('common_send_fail'), -3);
         }
         //写入缓存
         $expire = 180; //发送短信间隔时间, 默认3分钟

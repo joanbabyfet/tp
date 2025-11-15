@@ -170,7 +170,7 @@ class AdminService extends BaseService
             $login_ip       = request()->ip();
             $agent          = request()->header('User-Agent');
 
-            //先检测验证码
+            //先检测验证码(1次性)
             if(!captcha_check($verify_code)) {
                 $this->exception(Lang::get('common_verify_code_error'), -1);
             }
