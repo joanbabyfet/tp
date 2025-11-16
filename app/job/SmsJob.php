@@ -4,6 +4,8 @@ namespace app\job;
 
 use app\common\service\sms\SmsContext;
 use app\common\service\sms\SmsFactory;
+use app\event\SendCodeEvent;
+use app\model\SendCodeModel;
 use think\queue\Job;
 
 class SmsJob
@@ -34,9 +36,21 @@ class SmsJob
      */
     private function send($data)
     {
-        $strategy = SmsFactory::strategy('unimtx'); //选择策略
+        $type = $data['type'] ?? 'unimtx';
+        $strategy = SmsFactory::strategy($type); //选择策略
         $smsContext = new SmsContext($strategy);
         $status = $smsContext->send($data);
+
+        //写入发送验证码日志(通过队列来写)
+        $log_data = [
+            'to'        => $data['phone'],
+            'content'   => '您的验证码是'.$data['code'].'，10分钟内有效，请勿泄露。',
+            'type'      => 1, //消息类型，1表示短信验证码，2表示邮箱验证码
+            'source'    => SendCodeModel::SOURCE_MAP[$type], //来源 1=spug 2=unimtx 3=gmail
+            'status'    => $status,
+        ];
+        event(new SendCodeEvent($log_data));
+
         return $status;
     }
 }

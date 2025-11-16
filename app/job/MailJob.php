@@ -2,6 +2,8 @@
 
 namespace app\job;
 
+use app\event\SendCodeEvent;
+use app\model\SendCodeModel;
 use think\queue\Job;
 
 class MailJob
@@ -33,6 +35,17 @@ class MailJob
     private function send($data)
     {
         $status = app('mail')->send($data);
+
+        //写入发送验证码日志(通过队列来写)
+        $log_data = [
+            'to'        => $data['to'],
+            'content'   => $data['body'],
+            'type'      => 2, //消息类型，1表示短信验证码，2表示邮箱验证码
+            'source'    => SendCodeModel::SOURCE_MAP['gmail'], //来源 1=spug 2=unimtx 3=gmail
+            'status'    => $status,
+        ];
+        event(new SendCodeEvent($log_data));
+
         return $status;
     }
 }

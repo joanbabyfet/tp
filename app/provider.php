@@ -5,6 +5,7 @@ use app\common\service\AdminOplogService;
 use app\common\service\ArticleService;
 use app\common\service\MailService;
 use app\common\service\PushService;
+use app\common\service\SendCodeService;
 use app\common\service\TgService;
 use app\common\service\UserLoginService;
 use app\ExceptionHandle;
@@ -21,4 +22,5 @@ return [
     'mail'                   => MailService::class,
     'push'                   => PushService::class,
     'tg'                     => TgService::class,
+    'send_code'              => SendCodeService::class,
 ];

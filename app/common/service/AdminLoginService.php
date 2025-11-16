@@ -54,7 +54,7 @@ class AdminLoginService extends BaseService
                 'cli_hash'      => $cli_hash, //用户登录名和ip的hash
             ];
 
-            //添加=
+            //添加
             $this->model->save($save_data);
         }
         catch (\Exception $e) {

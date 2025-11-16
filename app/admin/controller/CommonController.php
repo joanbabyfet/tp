@@ -7,6 +7,7 @@ namespace app\admin\controller;
 use app\common\service\UploadService;
 use app\common\traits\SmsTrait;
 use app\common\traits\UploadTrait;
+use think\captcha\facade\Captcha;
 
 class CommonController extends BaseController
 {

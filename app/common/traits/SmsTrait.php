@@ -2,8 +2,6 @@
 
 namespace app\common\traits;
 
-use app\common\service\sms\SmsContext;
-use app\common\service\sms\SmsFactory;
 use app\job\SmsJob;
 use think\facade\Cache;
 use think\facade\Lang;
@@ -43,6 +41,7 @@ trait SmsTrait
 
         //发送短信验证码
         $data = [
+            'type'  => 'unimtx',
             'phone' => $phone,
             'code'  => $code,
         ];

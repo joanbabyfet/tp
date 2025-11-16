@@ -2,7 +2,8 @@
 // 事件定义文件
 return [
     'bind'      => [
-        'AdminOplogEvent' => 'app\event\AdminOplogEvent',
+        'AdminOplogEvent'   => 'app\event\AdminOplogEvent',
+        'SendCodeEvent'     => 'app\event\SendCodeEvent',
     ],
 
     'listen'    => [
@@ -12,7 +13,8 @@ return [
         'LogLevel' => [],
         'LogWrite' => [],
         //注册监听类
-        'AdminOplogEvent' => ['app\listener\AdminOplogListener'],
+        'AdminOplogEvent'   => ['app\listener\AdminOplogListener'],
+        'SendCodeEvent'     => ['app\listener\SendCodeListener'],
     ],
 
     'subscribe' => [

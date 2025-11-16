@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class CreateUserActiveStat extends Migrator
+class CreateUserActiveStatTable extends Migrator
 {
     /**
      * Change Method.

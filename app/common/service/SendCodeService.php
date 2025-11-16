@@ -3,46 +3,47 @@
 namespace app\common\service;
 
 use app\common\lib\cls_response;
-use app\model\AdminOplogModel;
+use app\model\SendCodeModel;
 use think\facade\Lang;
-use think\facade\Session;
 use think\facade\Validate;
 
-class AdminOplogService extends BaseService
+class SendCodeService extends BaseService
 {
     protected $model;
     public function __construct()
     {
-        $this->model = new AdminOplogModel();
+        $this->model = new SendCodeModel();
     }
 
-    //保存管理员操作日志
-    public function save($msg)
+    //保存发送验证码日志
+    public function save($data)
     {
         //参数过滤
         $validate = Validate::rule([
-            'msg'     => 'require|string',
+            'to'            => 'require|string',
+            'content'       => 'require|string',
+            'type'          => 'require|integer',
+            'source'        => 'require|integer',
+            'status'        => 'require|integer',
         ]);
 
         $status = 1;
         try {
-            if (!$validate->check(['msg' => $msg])) {
+            if (!$validate->check($data)) {
                 $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
-            $op_url = request()->pathinfo(); ///获取地址不含参数 example
+            $now = time();
 
             //组装数据
             $save_data = [
-                'uid'           => '1',
-                'username'      => 'admin',
-                'session_id'    => Session::getId(), //web场景使用
-                'msg'           => $msg,
-                'op_time'       => time(),
-                'op_ip'         => request()->ip(),
-                'op_country'    => request()->country(),
-                'op_url'        => addslashes($op_url), //在特定字符前添加反斜杠
+                'type'          => $data['type'],
+                'to'            => $data['to'],
+                'content'       => $data['content'],
+                'source'        => $data['source'],
+                'status'        => $data['status'],
+                'create_time'   => $now,
+                'create_user'   => '1',
             ];
-
             //添加
             $this->model->save($save_data);
         }
@@ -53,7 +54,7 @@ class AdminOplogService extends BaseService
                 'status'  => $status,
                 'errcode' => $e->getCode(),
                 'errmsg'  => $e->getMessage(),
-                'data'    => $msg
+                'data'    => $data
             ]);
         }
         return $status;
