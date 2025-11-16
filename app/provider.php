@@ -8,6 +8,7 @@ use app\common\service\PushService;
 use app\common\service\SendCodeService;
 use app\common\service\TgService;
 use app\common\service\UserLoginService;
+use app\common\service\WalletService;
 use app\ExceptionHandle;
 use app\Request;
 
@@ -23,4 +24,5 @@ return [
     'push'                   => PushService::class,
     'tg'                     => TgService::class,
     'send_code'              => SendCodeService::class,
+    'wallet'                 => WalletService::class,
 ];
