@@ -31,7 +31,7 @@ Route::group(function() {
         Route::post('edit', 'Article/edit');
         Route::post('enable', 'Article/enable');
         Route::post('disable', 'Article/disable');
-    });
+    })->middleware(['auth']);
 })->middleware(Throttle::class, [
     'visit_rate' => '60/m',
     'key' => '__CONTROLLER__/__ACTION__/__IP__',

@@ -28,7 +28,7 @@ class CreateTransferTable extends Migrator
      */
     public function change()
     {
-        $this->table('transfer', ['primary_key' => 'id', 'comment' => '转账记录']) //不生成id字段
+        $this->table('transfer', ['primary_key' => 'id', 'comment' => '钱包转账记录']) //不生成id字段
             ->addColumn(Column::integer('from_id')->setDefault(0)->setComment(''))
             ->addColumn(Column::string('from_type')->setDefault('')->setComment(''))
             ->addColumn(Column::char('to_id', 32)->setDefault('')->setComment(''))

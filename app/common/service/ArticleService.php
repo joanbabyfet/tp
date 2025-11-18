@@ -52,7 +52,8 @@ class ArticleService extends BaseService
             {
                 //更新
                 $up = array_merge($save_data, [
-                    'update_time'   => time()
+                    'update_time'   => time(),
+                    'update_user'   => request()->auth,
                 ]);
                 $this->model->where('id', '=', $id)->update($up);
             }
@@ -60,7 +61,8 @@ class ArticleService extends BaseService
             {
                 //添加
                 $add = array_merge($save_data, [
-                    'create_time'   => time()
+                    'create_time'   => time(),
+                    'create_user'   => request()->auth,
                 ]);
                 $this->model->save($add);
                 $last_insert_id = $this->model->id; //获取自增id

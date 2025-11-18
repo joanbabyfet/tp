@@ -59,19 +59,20 @@ class WalletService extends BaseService
             }
 
             //写入交易记录
-            $balance = $data['amount'] + $wallet['balance'];
+            $balance_after = $wallet['balance'] + $data['amount'];
             $add = [
-                'payable_type'  => $wallet['holder_type'],
-                'payable_id'    => $wallet['holder_id'],
-                'wallet_id'     => $wallet['id'],
-                'type'          => 'deposit',
-                'amount'        => $data['amount'],
-                'balance'       => $balance,
-                'confirmed'     => $confirmed,
-                'meta'          => $meta,
-                'uuid'          => $uuid,
-                'create_time'   => $now,
-                'update_time'   => $now,
+                'payable_type'      => $wallet['holder_type'],
+                'payable_id'        => $wallet['holder_id'],
+                'wallet_id'         => $wallet['id'],
+                'type'              => 'deposit',
+                'amount'            => $data['amount'],
+                'balance_before'    => $wallet['balance'],
+                'balance_after'     => $balance_after,
+                'confirmed'         => $confirmed,
+                'meta'              => $meta,
+                'uuid'              => $uuid,
+                'create_time'       => $now,
+                'update_time'       => $now,
             ];
             $transactionModel = new TransactionModel();
             $transactionModel->save($add);
@@ -88,7 +89,7 @@ class WalletService extends BaseService
 
             $ret_data = [
                 'uid'           => $data['uid'],
-                'balance'       => $balance, //余额
+                'balance'       => $balance_after, //余额
                 'uuid'          => $uuid, //交易号
             ];
         }
@@ -147,24 +148,25 @@ class WalletService extends BaseService
             }
 
             //检测余额
-            if($data['amount'] > $wallet['balance']) {
+            if($data['amount'] >= $wallet['balance']) {
                 $this->exception('余额不足', -2);
             }
 
             //写入交易记录
-            $balance = $data['amount'] * -1 + $wallet['balance'];
+            $balance_after = $wallet['balance'] - $data['amount'];
             $add = [
-                'payable_type'  => $wallet['holder_type'],
-                'payable_id'    => $wallet['holder_id'],
-                'wallet_id'     => $wallet['id'],
-                'type'          => 'withdraw',
-                'amount'        => $data['amount'] * -1,
-                'balance'       => $balance,
-                'confirmed'     => $confirmed,
-                'meta'          => $meta,
-                'uuid'          => $uuid,
-                'create_time'   => $now,
-                'update_time'   => $now,
+                'payable_type'      => $wallet['holder_type'],
+                'payable_id'        => $wallet['holder_id'],
+                'wallet_id'         => $wallet['id'],
+                'type'              => 'withdraw',
+                'amount'            => $data['amount'], //转负数
+                'balance_before'    => $wallet['balance'],
+                'balance_after'     => $balance_after,
+                'confirmed'         => $confirmed,
+                'meta'              => $meta,
+                'uuid'              => $uuid,
+                'create_time'       => $now,
+                'update_time'       => $now,
             ];
             $transactionModel = new TransactionModel();
             $transactionModel->save($add);
@@ -181,7 +183,7 @@ class WalletService extends BaseService
 
             $ret_data = [
                 'uid'           => $data['uid'],
-                'balance'       => $balance, //余额
+                'balance'       => $balance_after, //余额
                 'uuid'          => $uuid, //交易号
             ];
         }
@@ -249,41 +251,45 @@ class WalletService extends BaseService
             }
 
             //检测余额
-            if($data['amount'] > $wallet['balance']) {
+            if($data['amount'] >= $wallet['balance']) {
                 $this->exception('余额不足', -3);
             }
 
             //提现
+            $balance_after = $wallet['balance'] - $data['amount'];
             $add = [
-                'payable_type'  => $wallet['holder_type'],
-                'payable_id'    => $wallet['holder_id'],
-                'wallet_id'     => $wallet['id'],
-                'type'          => 'withdraw',
-                'amount'        => $data['amount'] * -1,
-                'balance'       => $data['amount'] * -1 + $wallet['balance'],
-                'confirmed'     => $confirmed,
-                'meta'          => $meta,
-                'uuid'          => cls_util::random('uuid'),
-                'create_time'   => $now,
-                'update_time'   => $now,
+                'payable_type'      => $wallet['holder_type'],
+                'payable_id'        => $wallet['holder_id'],
+                'wallet_id'         => $wallet['id'],
+                'type'              => 'withdraw',
+                'amount'            => $data['amount'],
+                'balance_before'    => $wallet['balance'],
+                'balance_after'     => $balance_after,
+                'confirmed'         => $confirmed,
+                'meta'              => $meta,
+                'uuid'              => cls_util::random('uuid'),
+                'create_time'       => $now,
+                'update_time'       => $now,
             ];
             $transactionModel = new TransactionModel();
             $transactionModel->save($add);
             $withdraw_id = $transactionModel->id; //获取自增id
 
             //充值
+            $balance_after = $to_wallet['balance'] + $data['amount'];
             $add = [
-                'payable_type'  => $to_wallet['holder_type'],
-                'payable_id'    => $to_wallet['holder_id'],
-                'wallet_id'     => $to_wallet['id'],
-                'type'          => 'deposit',
-                'amount'        => $data['amount'],
-                'balance'       => $data['amount'] + $to_wallet['balance'],
-                'confirmed'     => $confirmed,
-                'meta'          => $meta,
-                'uuid'          => cls_util::random('uuid'),
-                'create_time'   => $now,
-                'update_time'   => $now,
+                'payable_type'      => $to_wallet['holder_type'],
+                'payable_id'        => $to_wallet['holder_id'],
+                'wallet_id'         => $to_wallet['id'],
+                'type'              => 'deposit',
+                'amount'            => $data['amount'],
+                'balance_before'    => $wallet['balance'],
+                'balance_after'     => $balance_after,
+                'confirmed'         => $confirmed,
+                'meta'              => $meta,
+                'uuid'              => cls_util::random('uuid'),
+                'create_time'       => $now,
+                'update_time'       => $now,
             ];
             $transactionModel = new TransactionModel();
             $transactionModel->save($add);
@@ -298,8 +304,8 @@ class WalletService extends BaseService
                 'status'        => 'transfer',
                 'deposit_id'    => $deposit_id,
                 'withdraw_id'   => $withdraw_id,
-                'discount'      => 0,
-                'fee'           => 0,
+                'discount'      => 0,   //折扣
+                'fee'           => 0,   //费用
                 'uuid'          => cls_util::random('uuid'),
                 'create_time'   => $now,
                 'update_time'   => $now,
@@ -391,8 +397,8 @@ class WalletService extends BaseService
                     'meta'              => $meta,
                     'balance'           => 0,
                     'decimal_places'    => 2,
-                    'created_at'        => $now,
-                    'updated_at'        => $now,
+                    'create_time'       => $now,
+                    'update_time'       => $now,
                 ];
                 $this->model->save($add);
                 $wallet_id = $this->model->id; //获取自增id

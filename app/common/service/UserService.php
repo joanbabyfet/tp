@@ -7,6 +7,7 @@ use app\common\lib\cls_response;
 use app\common\lib\cls_util;
 use app\job\UserLoginJob;
 use app\model\UserModel;
+use think\facade\Cache;
 use think\facade\Lang;
 use think\facade\Queue;
 use think\facade\Session;
@@ -296,6 +297,67 @@ class UserService extends BaseService
                 'password' => cls_util::get_password($new_password)
             ];
             $this->model->where('id', '=', $id)->update($up);
+        }
+        catch (\Exception $e) {
+            $status = $this->get_exception_status($e);
+            //写入日志
+            logger(__METHOD__, [
+                'status'  => $status,
+                'errcode' => $e->getCode(),
+                'errmsg'  => $e->getMessage(),
+                'data'    => $data
+            ]);
+        }
+        return $status;
+    }
+
+    /**
+     * 忘记密码-重置密码
+     * @param array $data
+     * @return int|mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function forgot_pwd(array $data)
+    {
+        //参数过滤
+        $validate = Validate::rule([
+            'phone'             => 'require|string',
+            'phone_area_code'   => 'require|string',
+            'sms_verify_code'   => 'require|string',
+            'password'          => 'require|string', //新密码
+        ]);
+
+        $status = 1;
+        try {
+            if (!$validate->check($data)) {
+                $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
+            }
+            $phone              = $data['phone'];
+            $phone_area_code    = $data['phone_area_code'];
+            $sms_verify_code    = $data['sms_verify_code'];
+            $password           = $data['password'];
+            $cache_key          = sprintf("sms_verify_code:%s", $phone_area_code.$phone);
+
+            $info = Cache::store('redis')->get($cache_key);
+            if(empty($info) || strtotime('-3 minute') > $info['time']) {
+                $this->exception(Lang::get('common_verify_code_expired'), -1);
+            }
+            if($info['code'] != $sms_verify_code) {
+                $this->exception(Lang::get('common_verify_code_error'), -2);
+            }
+
+            //获取用户信息(读主库)
+            $user = $this->model::master()->where('phone', '=', $phone_area_code.$phone)->find();
+            if(empty($user)) {
+                $this->exception('该用户不存在', -3);
+            }
+            $user = $user->toArray();
+
+            //更新
+            $up = [
+                'password' => cls_util::get_password($password),
+            ];
+            $this->model->where('id', '=', $user['id'])->update($up);
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);

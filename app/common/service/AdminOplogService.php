@@ -33,7 +33,7 @@ class AdminOplogService extends BaseService
 
             //组装数据
             $save_data = [
-                'uid'           => '1',
+                'uid'           => request()->auth,
                 'username'      => 'admin',
                 'session_id'    => Session::getId(), //web场景使用
                 'msg'           => $msg,

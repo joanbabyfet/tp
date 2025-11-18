@@ -68,7 +68,8 @@ class AdminService extends BaseService
             {
                 //添加
                 $add = array_merge($save_data, [
-                    'create_time'   => time()
+                    'create_time'   => time(),
+                    'create_user'   => request()->auth,
                 ]);
                 $this->model->save($add);
                 $last_insert_id = cls_util::random(); //获取自增id

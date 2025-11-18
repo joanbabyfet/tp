@@ -79,4 +79,17 @@ class UserController  extends BaseController
         }
         return $this->success();
     }
+
+    /**
+     * 忘记密码-重置密码
+     * @return \think\response\Json
+     */
+    public function forgot_pwd()
+    {
+        $status = $this->userService->forgot_pwd(request()->post());
+        if($status < 0) {
+            return $this->error($this->userService->get_err_msg($status), $status);
+        }
+        return $this->success();
+    }
 }

@@ -42,7 +42,7 @@ class SendCodeService extends BaseService
                 'source'        => $data['source'],
                 'status'        => $data['status'],
                 'create_time'   => $now,
-                'create_user'   => '1',
+                'create_user'   => request()->auth,
             ];
             //添加
             $this->model->save($save_data);
