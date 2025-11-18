@@ -1,0 +1,14 @@
+<label class="control-label float-right" style="margin: 3px 20px;">
+    <small>共<span class="listTotal">{$total}</span>条记录</small>&nbsp;
+    <small>每页显示</small>
+
+    <select class="input-sm" onchange="setPageSize(this)">
+        <option value="10" {if $pagesize==10}selected{/if}>10</option>
+        <option value="20" {if $pagesize==20}selected{/if}>20</option>
+        <option value="30" {if $pagesize==30}selected{/if}>30</option>
+        <option value="50" {if $pagesize==50}selected{/if}>50</option>
+        <option value="100" {if $pagesize==100}selected{/if}>100</option>
+    </select>
+
+    <small>条记录</small>
+</label>

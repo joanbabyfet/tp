@@ -1,7 +1,9 @@
 <?php
 
+use app\common\lib\cls_paginator;
 use app\common\service\AdminLoginService;
 use app\common\service\AdminOplogService;
+use app\common\service\ApiReqLogService;
 use app\common\service\ArticleService;
 use app\common\service\MailService;
 use app\common\service\PushService;
@@ -25,4 +27,6 @@ return [
     'tg'                     => TgService::class,
     'send_code'              => SendCodeService::class,
     'wallet'                 => WalletService::class,
+    'api_req_log'            => ApiReqLogService::class,
+    'think\Paginator'        => cls_paginator::class,  //自定义分页驱动
 ];

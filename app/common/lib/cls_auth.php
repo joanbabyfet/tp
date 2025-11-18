@@ -2,7 +2,6 @@
 
 namespace app\common\lib;
 
-use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 

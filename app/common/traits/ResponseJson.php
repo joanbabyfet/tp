@@ -3,7 +3,9 @@
 namespace app\common\traits;
 
 use app\common\lib\cls_response;
+use app\job\ApiReqLogJob;
 use think\facade\Lang;
+use think\facade\Queue;
 use think\response\Json;
 
 trait ResponseJson
@@ -25,6 +27,15 @@ trait ResponseJson
             'timestamp' => time(),
             'data'      => empty($data) ? (object)$data : $data,
         ];
+
+        //通过队列写入api请求日志
+        Queue::push(ApiReqLogJob::class, [
+            'ct'        => request()->controller(),
+            'ac'        => request()->action(),
+            'ip'        => request()->ip(),
+            'req_data'  => request()->param(),
+            'res_data'  => $rdata
+        ], $queue = null);
 
         return \json($rdata, 200, $header, $option);
     }
