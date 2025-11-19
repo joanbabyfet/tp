@@ -20,6 +20,7 @@ Route::group(function() {
     Route::post('forgot_pwd', 'User/forgot_pwd');
     Route::post('userinfo', 'User/userinfo')->middleware(['auth']);
     Route::post('edit_pwd', 'User/edit_pwd')->middleware(['auth']);
+    Route::post('create_order', 'Order/create_order')->middleware(['auth']);
     //Route::get('captcha/:id', '\think\captcha\CaptchaController@index');
     Route::get('captcha', 'Common/captcha');
     Route::post('send_sms_code', 'Common/send_sms_code');

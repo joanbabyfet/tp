@@ -2,6 +2,9 @@
 
 namespace app\common\lib;
 
+/**
+ * 自定义分页器
+ */
 class cls_paginator extends \think\Paginator
 {
     /**

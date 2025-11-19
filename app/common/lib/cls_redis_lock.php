@@ -137,4 +137,22 @@ class cls_redis_lock
         //从redis返回该锁的生存时间
         return $redis->get("lock:{$name}");
     }
+
+    /**
+     * 加原子锁并进程结束后自动解锁
+     * @param $lock_name
+     * @param $timeout int 循环获取锁的等待超时时间，在此时间内会一直尝试获取锁直到超时，为0表示失败后直接返回不等待
+     * @param $expire int 当前锁的最大生存时间(秒)，必须大于0，如果超过生存时间锁仍未被释放，则系统会自动强制释放
+     * @return bool true表示上锁成功 false表示上锁失败
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public static function auto_lock($lock_name, $timeout = 0, $expire = 15)
+    {
+        if(cls_redis_lock::lock($lock_name, $timeout, $expire))
+        {
+            self::unlock($lock_name);
+            return true;
+        }
+        return false;
+    }
 }

@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class ApiReqLog extends Migrator
+class CreateApiReqLogTable extends Migrator
 {
     /**
      * Change Method.

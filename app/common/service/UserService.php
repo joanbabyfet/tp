@@ -131,9 +131,9 @@ class UserService extends BaseService
             $agent          = request()->header('User-Agent');
 
             //先检测验证码(1次性)
-            if(!captcha_check($verify_code)) {
-                $this->exception(Lang::get('common_verify_code_error'), -1);
-            }
+//            if(!captcha_check($verify_code)) {
+//                $this->exception(Lang::get('common_verify_code_error'), -1);
+//            }
 
             $where = [
                 'username' => $username
