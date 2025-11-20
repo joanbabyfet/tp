@@ -21,6 +21,7 @@ Route::group(function() {
     Route::post('userinfo', 'User/userinfo')->middleware(['auth']);
     Route::post('edit_pwd', 'User/edit_pwd')->middleware(['auth']);
     Route::post('create_order', 'Order/create_order')->middleware(['auth']);
+    Route::post('get_order_detail', 'Order/detail')->middleware(['auth']);
     //Route::get('captcha/:id', '\think\captcha\CaptchaController@index');
     Route::get('captcha', 'Common/captcha');
     Route::post('send_sms_code', 'Common/send_sms_code');

@@ -7,6 +7,7 @@ use app\common\lib\cls_redis_lock;
 use app\common\lib\cls_util;
 use app\common\service\OrderService;
 use app\common\service\UserService;
+use think\facade\Cache;
 use think\Request;
 
 class OrderController extends BaseController
@@ -31,5 +32,27 @@ class OrderController extends BaseController
             return $this->error($this->orderService->get_err_msg($status), $status);
         }
         return $this->success($ret_data);
+    }
+
+    /**
+     * 获取订单详请
+     * @return \think\response\Json
+     */
+    public function detail()
+    {
+        $id = request()->param('order_id');
+        if(empty($id)) {
+            return $this->invalid_params();
+        }
+
+        $cache_key = sprintf("order:order_id:%s", $id);
+        $res = Cache::store('redis')->get($cache_key);
+        if(empty($res)) {
+            //获取详情
+            $this->orderService->detail(['id' => $id], $res);
+            //写入缓存
+            Cache::store('redis')->set($cache_key, $res);
+        }
+        return $this->success($res);
     }
 }

@@ -56,7 +56,7 @@ class OrderService extends BaseService
 
             //其他进程正在执行
             $lock_name = sprintf('%s', __FUNCTION__);
-            if( !cls_redis_lock::auto_lock($lock_name))
+            if(!cls_redis_lock::auto_lock($lock_name))
             {
                 $this->exception("其他进程占用中", -1);
             }

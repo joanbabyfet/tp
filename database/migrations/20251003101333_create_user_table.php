@@ -30,6 +30,7 @@ class CreateUserTable extends Migrator
     {$this->table('user', ['id' => false, 'primary_key' => 'id', 'comment' => '用户']) //不生成id字段
         ->addColumn(Column::char('id', 32)->setDefault('')->setNull(false)->setComment('用户id'))
         ->addColumn(Column::integer('short_id')->setDefault(0)->setComment('短id'))
+        ->addColumn(Column::char('agent_id', 32)->setDefault('')->setComment('代理id'))
         ->addColumn(Column::string('avatar', 200)->setDefault('')->setComment('头像'))
         ->addColumn(Column::string('username', 60)->setDefault('')->setComment('用户名'))
         ->addColumn(Column::string('password', 60)->setDefault('')->setComment('用户密码'))

@@ -5,6 +5,7 @@
 return [
     // 指令定义
     'commands' => [
-        'article:add' => 'app\command\ArticleCommand'
+        'article:add'               => 'app\command\ArticleCommand',
+        'user_increase_stat:gen'    => 'app\command\UserIncreaseStatCommand'
     ],
 ];
