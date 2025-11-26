@@ -3,12 +3,8 @@ declare (strict_types = 1);
 
 namespace app\Api\controller;
 
-use app\common\lib\cls_redis_lock;
-use app\common\lib\cls_util;
 use app\common\service\OrderService;
-use app\common\service\UserService;
 use think\facade\Cache;
-use think\Request;
 
 class OrderController extends BaseController
 {
