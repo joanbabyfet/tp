@@ -1021,14 +1021,14 @@ class cls_util
     /**
      * 不同时区时间转换
      * @param  array  $data
-     * pub_func::time_convert([
+     * cls_util::time_convert([
      *      'datetime'      => KALI_TIMESTAMP,//可以是时间格式或者时间戳
      *      'from_timezone' => 'ETC/GMT-7',//默认为系统设置的时区，即 ETC/GMT
      *      'to_timezone'   => 'ETC/GMT-8',//转换成为的时区，默认获取用户所在国家对应时区
      *      'format'        => ''//格式化输出字符串。默认为Y-m-d H:i:s
      * ]);
      *
-     * 一般直接使用 pub_func::time_convert(['datetime' => xxxxx]);
+     * 一般直接使用 cls_util::time_convert(['datetime' => xxxxx]);
      * @return string
      */
     public static function time_convert($data = [])

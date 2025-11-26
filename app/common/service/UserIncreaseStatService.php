@@ -5,6 +5,7 @@ namespace app\common\service;
 use app\common\lib\cls_response;
 use app\common\lib\cls_util;
 use app\model\UserIncreaseStatModel;
+use app\model\UserModel;
 use think\facade\Db;
 use think\facade\Lang;
 use think\facade\Validate;
@@ -34,11 +35,15 @@ class UserIncreaseStatService extends BaseService
             $from_time = cls_util::date_convert_timestamp("$from_date 00:00:00", $to_timezone); //需要转化的时区，东七区是越南时间
             $now = time();
 
-            //获取用户增长数据
+            //获取用户增长数据(从主库获取数据而不是默认的从库)
             $data_map = [];
             $pre_user_count = [];
-            $sql = "select DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(`reg_time`, '%Y/%m/%d %H:00'), '+8:00', '+7:00'), '%Y/%m/%d') As date, agent_id, count(id) as user_increase_count from tp_user where reg_time >= :reg_time group by date, agent_id";
-            $list = Db::query($sql, ['reg_time' => $from_time], true); //query方法默认是在读服务器(从)执行, 如果从主库读取使用 true
+            $userModel = new UserModel();
+            $list = $userModel->master()->field([
+                'agent_id',
+                "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(`reg_time`, '%Y/%m/%d %H:00'), '+8:00', '+7:00'), '%Y/%m/%d') as date",
+                'COUNT(id) as user_increase_count',
+            ])->where('reg_time', '>=', $from_time)->group('date, agent_id')->select()->toArray();
             foreach($list as $v)
             {
                 //获取最近1条统计
