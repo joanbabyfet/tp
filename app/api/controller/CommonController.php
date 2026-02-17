@@ -61,8 +61,8 @@ class CommonController extends BaseController
     public function send_email_code()
     {
         $code               = mt_rand(100000, 999999);              //生成6位随机数
-        $email              = request()->post('email');             //邮箱
-        $img_verify_code    = request()->post('img_verify_code');   //图片验证码
+        $email              = request()->post('email/s');             //邮箱
+        $img_verify_code    = request()->post('img_verify_code/s');   //图片验证码
         if(empty($email) || empty($img_verify_code)) {
             return $this->invalid_params();
         }
@@ -102,8 +102,8 @@ class CommonController extends BaseController
      */
     public function check_email_code()
     {
-        $email          = request()->post('email');         //邮箱
-        $verify_code    = request()->post('verify_code');   //验证码
+        $email          = request()->post('email/s');         //邮箱
+        $verify_code    = request()->post('verify_code/s');   //验证码
         if(empty($email) || empty($verify_code)) {
             return $this->invalid_params();
         }

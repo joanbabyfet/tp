@@ -21,8 +21,8 @@ class ArticleController extends BaseController
      */
     public function index()
     {
-        $page   = request()->param('page', 1);
-        $page_size   = request()->param('page_size', 10);
+        $page       = request()->param('page/d', 1);
+        $page_size  = request()->param('page_size/d', 10);
 
         //筛选
         $where = ['status' => 1];
@@ -30,6 +30,7 @@ class ArticleController extends BaseController
             'page'      => $page,
             'page_size' => $page_size,
             'where'     => $where,
+            'count'     => 1,
         ];
         $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
@@ -44,7 +45,7 @@ class ArticleController extends BaseController
      */
     public function detail()
     {
-        $id = request()->param('id');
+        $id = request()->param('id/d');
         if(empty($id)) {
             return $this->invalid_params();
         }
@@ -55,7 +56,7 @@ class ArticleController extends BaseController
             //获取详情
             $this->articleService->detail(['id' => $id], $res);
             //写入缓存
-            Cache::store('redis')->set($cache_key, $res);
+            Cache::store('redis')->set($cache_key, $res, 300);
         }
         return $this->success($res);
     }

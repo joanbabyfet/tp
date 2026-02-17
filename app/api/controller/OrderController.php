@@ -47,7 +47,7 @@ class OrderController extends BaseController
             //获取详情
             $this->orderService->detail(['id' => $id], $res);
             //写入缓存
-            Cache::store('redis')->set($cache_key, $res);
+            Cache::store('redis')->set($cache_key, $res, 300);
         }
         return $this->success($res);
     }

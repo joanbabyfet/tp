@@ -56,8 +56,14 @@ class BaseService
     {
         //参数过滤
         $validate = Validate::rule([
-            'page'      => 'integer',   // 第几页
-            'page_size' => 'integer',   // 每页展示几条
+            'page'          => 'integer',   // 第几页
+            'page_size'     => 'integer',   // 每页展示几条
+            'count'         => 'integer',   // 显示总条数
+            'limit'         => 'integer',   // 显示几条
+            'field'         => 'array',     // 弹性字段
+            'is_master'     => 'integer',   // 是否查主库
+            'lock'          => 'integer',    // 锁表
+            'share'         => 'integer',    // 锁表
         ]);
 
         $status = 1;
@@ -68,18 +74,54 @@ class BaseService
             $page       = $data['page'] ?? 1;
             $page_size  = $data['page_size'] ?? 20;
             $where      = $data['where'] ?? [];
+            $count      = $data['count'] ?? 0;
+            $limit      = $data['limit'] ?? 0;
+            $field      = $data['field'] ?? ['*']; //默认显示全部字段
+            $is_master  = $data['is_master'] ?? 0;
+            $lock       = $data['lock'] ?? 0;
+            $share      = $data['share'] ?? 0;
 
             // 常用查询条件
             $offset = ($page - 1) * $page_size;
             $order_by = empty($sort) ? ['create_time' => 'desc'] : $sort;
-            $list = $this->model->where($where)->limit($offset , (int)$page_size)->order($order_by)->field('*')->select();
-            //获取总条数
-            $count = $this->model->where($where)->count();
+
+            $query = $this->model->where($where);
+            //锁表只走主库，要不很容易悲剧
+            if (!empty($lock) || !empty($share)) {
+                // 优先锁定 lock
+                if (!empty($lock)) {
+                    $query->lock(true);
+                } elseif (!empty($share)) {
+                    $query->lock('lock in share mode');
+                }
+                // 标记主库
+                $is_master = 1;
+            }
+            // 切换数据库
+            if($is_master) {
+                $query->master(true);
+            }
+            else {
+                $query->master(false);
+            }
+
+            // 支持弹性字段
+            if (!empty($field)) {
+                $query->field($field);
+            }
+            //总条数(不受 limit 影响)
+            $total = !empty($count) ? (int)$query->count() : 0;
+
+            if(isset($data['page']) || isset($data['page_size'])) {
+                $query->limit($offset, (int)$page_size);
+            }
+            elseif(isset($data['limit'])) {
+                $query->limit($limit);
+            }
+            $list = $query->order($order_by)->select();
+
             //返回结果
-            $ret_data = [
-                'count' => $count,
-                'list' => $list
-            ];
+            $ret_data = !empty($count) ? ['count' => $total, 'list'  => $list] : $list;
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);

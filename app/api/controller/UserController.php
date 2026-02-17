@@ -62,7 +62,7 @@ class UserController  extends BaseController
             //获取详情
             $this->userService->detail(['id' => $id], $res);
             //写入缓存
-            Cache::store('redis')->set($cache_key, $res);
+            Cache::store('redis')->set($cache_key, $res, 300); //低实时性数据 10~30 分钟, 列表/详情 5 分钟
         }
         return $this->success($res);
     }
@@ -86,6 +86,19 @@ class UserController  extends BaseController
      */
     public function forgot_pwd()
     {
+        $phone              = request()->post('phone/s');
+        $phone_area_code    = request()->post('phone_area_code/s');
+        $sms_verify_code    = request()->post('sms_verify_code/d');
+        $cache_key          = sprintf("sms_verify_code:%s", $phone_area_code.$phone);
+
+        $info = Cache::store('redis')->get($cache_key);
+        if(empty($info) || strtotime('-3 minute') > $info['time']) {
+            return $this->error(Lang::get('common_verify_code_expired'), -1);
+        }
+        if($info['code'] != $sms_verify_code) {
+            return $this->error(Lang::get('common_verify_code_error'), -2);
+        }
+
         $status = $this->userService->forgot_pwd(request()->post());
         if($status < 0) {
             return $this->error($this->userService->get_err_msg($status), $status);

@@ -23,19 +23,22 @@ class ArticleController extends BaseController
      */
     public function index()
     {
-        $title      = request()->param('title');
-        $status     = request()->param('status');
-        $page       = request()->param('page', 1);
-        $page_size  = request()->param('page_size', 20);
+        $title      = request()->param('title/s');
+        $status     = request()->param('status/d');
+        $page       = request()->param('page/d', 1);
+        $page_size  = request()->param('page_size/d', 20);
 
         //筛选
         $where = [];
-        $title and $where['title'] = ['like', "%{$title}%"];
-        is_numeric($status) and $where['status'] = $status;
+        !empty($title) && $where['title'] = ['like', "%{$title}%"];
+        is_numeric($status) && $where['status'] = $status;
+
         $data = [
             'page'      => $page,
             'page_size' => $page_size,
             'where'     => $where,
+            'count'     => 1,
+            'lock' => 1,
         ];
         $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
@@ -50,10 +53,7 @@ class ArticleController extends BaseController
      */
     public function detail()
     {
-        $id = request()->param('id');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
+        $id = request()->param('id/d');
 
         $status = $this->articleService->detail(['id' => $id], $ret_data);
         if($status < 0) {
@@ -76,7 +76,7 @@ class ArticleController extends BaseController
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
         //写入操作日志
-        event(new AdminOplogEvent("文章添加 {$ret_data}"));
+        $this->write_log("文章添加 {$ret_data}");
 
         return $this->success();
     }
@@ -97,10 +97,10 @@ class ArticleController extends BaseController
 
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $data['id']);
-        Cache::store('redis')->delete($cache_key);
+        $this->clear_cache($cache_key);
 
         //写入操作日志
-        event(new AdminOplogEvent("文章修改 {$data['id']}"));
+        $this->write_log("文章修改 {$data['id']}");
 
         return $this->success();
     }
@@ -112,10 +112,7 @@ class ArticleController extends BaseController
      */
     public function delete()
     {
-        $id = request()->post('id');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
+        $id = request()->post('id/d');
 
         $status = $this->articleService->del(['id' => $id]);
         if($status < 0) {
@@ -124,10 +121,10 @@ class ArticleController extends BaseController
 
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $id);
-        Cache::store('redis')->delete($cache_key);
+        $this->clear_cache($cache_key);
 
         //写入操作日志
-        event(new AdminOplogEvent("文章删除 {$id}"));
+        $this->write_log("文章删除 {$id}");
 
         return $this->success();
     }
@@ -139,10 +136,7 @@ class ArticleController extends BaseController
      */
     public function enable()
     {
-        $id = request()->post('id');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
+        $id = request()->post('id/d');
 
         $status = $this->articleService->enable(['id' => $id]);
         if($status < 0) {
@@ -151,10 +145,10 @@ class ArticleController extends BaseController
 
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $id);
-        Cache::store('redis')->delete($cache_key);
+        $this->clear_cache($cache_key);
 
         //写入操作日志
-        event(new AdminOplogEvent("文章启用 {$id}"));
+        $this->write_log("文章启用 {$id}");
 
         return $this->success();
     }
@@ -166,10 +160,7 @@ class ArticleController extends BaseController
      */
     public function disable()
     {
-        $id = request()->post('id');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
+        $id = request()->post('id/d');
 
         $status = $this->articleService->disable(['id' => $id]);
         if($status < 0) {
@@ -178,10 +169,10 @@ class ArticleController extends BaseController
 
         //干掉緩存
         $cache_key = sprintf("article:id:%s", $id);
-        Cache::store('redis')->delete($cache_key);
+        $this->clear_cache($cache_key);
 
         //写入操作日志
-        event(new AdminOplogEvent("文章禁用 {$id}"));
+        $this->write_log("文章禁用 {$id}");
 
         return $this->success();
     }

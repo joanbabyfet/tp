@@ -334,17 +334,7 @@ class UserService extends BaseService
             }
             $phone              = $data['phone'];
             $phone_area_code    = $data['phone_area_code'];
-            $sms_verify_code    = $data['sms_verify_code'];
             $password           = $data['password'];
-            $cache_key          = sprintf("sms_verify_code:%s", $phone_area_code.$phone);
-
-            $info = Cache::store('redis')->get($cache_key);
-            if(empty($info) || strtotime('-3 minute') > $info['time']) {
-                $this->exception(Lang::get('common_verify_code_expired'), -1);
-            }
-            if($info['code'] != $sms_verify_code) {
-                $this->exception(Lang::get('common_verify_code_error'), -2);
-            }
 
             //获取用户信息(读主库)
             $user = $this->model::master()->where('phone', '=', $phone_area_code.$phone)->find();
