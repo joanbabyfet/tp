@@ -64,6 +64,7 @@ class BaseService
             'is_master'     => 'integer',   // 是否查主库
             'lock'          => 'integer',    // 锁表
             'share'         => 'integer',    // 锁表
+            'group'         => 'array',     // 分组
         ]);
 
         $status = 1;
@@ -80,6 +81,7 @@ class BaseService
             $is_master  = $data['is_master'] ?? 0;
             $lock       = $data['lock'] ?? 0;
             $share      = $data['share'] ?? 0;
+            $group      = $data['group'] ?? [];
 
             // 常用查询条件
             $offset = ($page - 1) * $page_size;
@@ -105,12 +107,24 @@ class BaseService
                 $query->master(false);
             }
 
+            if (!empty($group)) {
+                $query->group($group);
+            }
+
             // 支持弹性字段
             if (!empty($field)) {
                 $query->field($field);
             }
             //总条数(不受 limit 影响)
-            $total = !empty($count) ? (int)$query->count() : 0;
+            $total = 0;
+            if (!empty($count)) {
+                if (!empty($group)) {
+                    //分组时单独处理
+                    $total = count($query->select());
+                } else {
+                    $total = (int)$query->count();
+                }
+            }
 
             if(isset($data['page']) || isset($data['page_size'])) {
                 $query->limit($offset, (int)$page_size);

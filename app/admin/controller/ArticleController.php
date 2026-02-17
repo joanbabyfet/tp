@@ -38,7 +38,6 @@ class ArticleController extends BaseController
             'page_size' => $page_size,
             'where'     => $where,
             'count'     => 1,
-            'lock' => 1,
         ];
         $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
