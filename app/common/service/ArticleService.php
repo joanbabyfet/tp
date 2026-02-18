@@ -34,7 +34,6 @@ class ArticleService extends BaseService
             'content'   => 'require|string',
             'status'    => 'require|integer',
             'cache_key' => 'string',    //缓存键
-            'is_admin'  => 'integer',   //是否后台
         ]);
 
         $status = 1;
@@ -44,7 +43,6 @@ class ArticleService extends BaseService
             }
             $id         = $data['id'] ?? 0;
             $cache_key  = $data['cache_key'] ?? '';
-            $is_admin   = $data['is_admin'] ?? 0;
 
             //组装数据
             $save_data = [
@@ -77,11 +75,6 @@ class ArticleService extends BaseService
                 $id = $this->model->id; //获取自增id
 
                 $ret_data = $id;
-            }
-
-            if ($is_admin) {
-                //写入操作日志
-                $this->write_log($data['id'] ? "文章编辑" : "文章添加".$id);
             }
         }
         catch (\Exception $e) {

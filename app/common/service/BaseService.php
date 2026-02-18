@@ -251,7 +251,6 @@ class BaseService
         $validate = Validate::rule([
             'id'            => 'require',
             'cache_key'     => 'string',    //缓存键
-            'is_admin'      => 'integer',   //是否后台
         ]);
 
         $status = 1;
@@ -261,7 +260,6 @@ class BaseService
             }
             $id         = $data['id'];
             $cache_key  = $data['cache_key'] ?? '';
-            $is_admin   = $data['is_admin'] ?? 0;
 
             //删除
             $this->model->destroy($id);
@@ -269,11 +267,6 @@ class BaseService
             //干掉緩存
             $cache_key = sprintf($cache_key, $id);
             Cache::store('redis')->delete($cache_key);
-
-            if ($is_admin) {
-                //写入操作日志
-                $this->write_log("文章删除 {$id}");
-            }
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
@@ -300,7 +293,6 @@ class BaseService
         $validate = Validate::rule([
             'id'            => 'require|integer',
             'cache_key'     => 'string',    //缓存键
-            'is_admin'      => 'integer',   //是否后台
         ]);
 
         $status = 1;
@@ -310,7 +302,6 @@ class BaseService
             }
             $id         = $data['id'] ?? 0;
             $cache_key  = $data['cache_key'] ?? '';
-            $is_admin   = $data['is_admin'] ?? 0;
 
             $update_data = [
                 'status'        => 1,
@@ -322,11 +313,6 @@ class BaseService
             //干掉緩存
             $cache_key = sprintf($cache_key, $id);
             Cache::store('redis')->delete($cache_key);
-
-            if ($is_admin) {
-                //写入操作日志
-                $this->write_log("文章启用 {$id}");
-            }
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
@@ -353,7 +339,6 @@ class BaseService
         $validate = Validate::rule([
             'id'            => 'require|integer',
             'cache_key'     => 'string',    //缓存键
-            'is_admin'      => 'integer',   //是否后台
         ]);
 
         $status = 1;
@@ -363,7 +348,6 @@ class BaseService
             }
             $id         = $data['id'] ?? 0;
             $cache_key  = $data['cache_key'] ?? '';
-            $is_admin   = $data['is_admin'] ?? 0;
 
             $update_data = [
                 'status'        => 0,
@@ -375,11 +359,6 @@ class BaseService
             //干掉緩存
             $cache_key = sprintf($cache_key, $id);
             Cache::store('redis')->delete($cache_key);
-
-            if ($is_admin) {
-                //写入操作日志
-                $this->write_log("文章禁用 {$id}");
-            }
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);

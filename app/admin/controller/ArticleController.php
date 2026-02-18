@@ -66,11 +66,7 @@ class ArticleController extends BaseController
      */
     public function add()
     {
-        $data = array_merge(request()->post(), [
-            'is_admin'  => 1,
-        ]);
-
-        $status = $this->articleService->edit($data, $ret_data);
+        $status = $this->articleService->edit(request()->post(), $ret_data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
@@ -86,12 +82,14 @@ class ArticleController extends BaseController
     {
         $data = array_merge(request()->post(), [
             'cache_key' => 'article:detail:%s',
-            'is_admin'  => 1,
         ]);
         $status = $this->articleService->edit($data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
+        //写入操作日志
+        $this->write_log("文章编辑 {$data['id']}");
+
         return $this->success();
     }
 
@@ -107,12 +105,14 @@ class ArticleController extends BaseController
         $data = [
             'id'        => $id,
             'cache_key' => 'article:detail:%s',
-            'is_admin'  => 1,
         ];
         $status = $this->articleService->del($data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
+        //写入操作日志
+        $this->write_log("文章删除 {$id}");
+
         return $this->success();
     }
 
@@ -128,12 +128,14 @@ class ArticleController extends BaseController
         $data = [
             'id'        => $id,
             'cache_key' => 'article:detail:%s',
-            'is_admin'  => 1,
         ];
         $status = $this->articleService->enable($data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
+        //写入操作日志
+        $this->write_log("文章启用 {$id}");
+
         return $this->success();
     }
 
@@ -149,12 +151,14 @@ class ArticleController extends BaseController
         $data = [
             'id'        => $id,
             'cache_key' => 'article:detail:%s',
-            'is_admin'  => 1,
         ];
         $status = $this->articleService->disable($data);
         if($status < 0) {
             return $this->error($this->articleService->get_err_msg($status), $status);
         }
+        //写入操作日志
+        $this->write_log("文章禁用 {$id}");
+
         return $this->success();
     }
 }
