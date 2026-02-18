@@ -1,10 +1,9 @@
 <?php
 declare (strict_types = 1);
 
-namespace app\Api\controller;
+namespace app\api\controller;
 
 use app\common\service\OrderService;
-use think\facade\Cache;
 
 class OrderController extends BaseController
 {
@@ -36,18 +35,16 @@ class OrderController extends BaseController
      */
     public function detail()
     {
-        $id = request()->param('order_id');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
-
-        $cache_key = sprintf("order:order_id:%s", $id);
-        $res = Cache::store('redis')->get($cache_key);
-        if(empty($res)) {
-            //获取详情
-            $this->orderService->detail(['id' => $id], $res);
-            //写入缓存
-            Cache::store('redis')->set($cache_key, $res, 300);
+        $id = request()->param('order_id/d');
+        //获取详情
+        $data = [
+            'id'        => $id,
+            'is_cache'  => 1, //前台使用缓存
+            'cache_key' => 'order:detail:%d',
+        ];
+        $status = $this->orderService->detail($data, $res);
+        if($status < 0) {
+            return $this->error($this->orderService->get_err_msg($status), $status);
         }
         return $this->success($res);
     }

@@ -218,7 +218,10 @@ class UserService extends BaseService
     {
         //参数过滤
         $validate = Validate::rule([
-            'id' => 'require',
+            'id'            => 'require',
+            'is_master'     => 'integer',   // 是否查主库
+            'is_cache'      => 'integer',    // 是否使用缓存
+            'cache_key'     => 'string',    //缓存键
         ]);
 
         $status = 1;
@@ -227,6 +230,20 @@ class UserService extends BaseService
                 $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
             $id = $data['id'];
+            $is_master  = $data['is_master'] ?? 0;
+            $is_cache   = $data['is_cache'] ?? 0;
+            $cache_key  = $data['cache_key'] ?? '';
+
+            $use_cache = $is_cache && empty($is_master);
+            $cache_key = sprintf($cache_key, $id);
+            if ($use_cache) {
+                $cache_data = Cache::store('redis')->get($cache_key);
+                if ($cache_data  !== null) {
+                    // 解码成数组
+                    $ret_data = json_decode($cache_data, true);
+                    return $status;
+                }
+            }
 
             //获取单条
             $res = $this->model->find($id);
@@ -237,6 +254,10 @@ class UserService extends BaseService
                 $info = $this->model->formatInfo($info);
             }
             $ret_data = $info;
+
+            if ($use_cache) {
+                Cache::store('redis')->set($cache_key, json_encode($ret_data, JSON_UNESCAPED_UNICODE), 300);
+            }
         }
         catch (\Exception $e) {
             $status = $this->get_exception_status($e);
@@ -335,6 +356,16 @@ class UserService extends BaseService
             $phone              = $data['phone'];
             $phone_area_code    = $data['phone_area_code'];
             $password           = $data['password'];
+            $sms_verify_code    = $data['sms_verify_code'];
+            $cache_key          = sprintf("sms_verify_code:%s", $phone_area_code.$phone);
+
+            $info = Cache::store('redis')->get($cache_key);
+            if(empty($info) || strtotime('-3 minute') > $info['time']) {
+                $this->exception(Lang::get('common_verify_code_expired'), -1);
+            }
+            if($info['code'] != $sms_verify_code) {
+                $this->exception(Lang::get('common_verify_code_error'), -2);
+            }
 
             //获取用户信息(读主库)
             $user = $this->model::master()->where('phone', '=', $phone_area_code.$phone)->find();

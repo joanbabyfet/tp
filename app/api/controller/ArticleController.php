@@ -4,7 +4,6 @@ declare (strict_types = 1);
 namespace app\api\controller;
 
 use app\common\service\ArticleService;
-use think\facade\Cache;
 
 class ArticleController extends BaseController
 {
@@ -31,6 +30,8 @@ class ArticleController extends BaseController
             'page_size' => $page_size,
             'where'     => $where,
             'count'     => 1,
+            'is_cache'  => 1, //前台使用缓存
+            'cache_key' => 'article:list:%d:%d',
         ];
         $status = $this->articleService->get_list($data, $ret_data);
         if($status < 0) {
@@ -46,17 +47,16 @@ class ArticleController extends BaseController
     public function detail()
     {
         $id = request()->param('id/d');
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
 
-        $cache_key = sprintf("article:id:%s", $id);
-        $res = Cache::store('redis')->get($cache_key);
-        if(empty($res)) {
-            //获取详情
-            $this->articleService->detail(['id' => $id], $res);
-            //写入缓存
-            Cache::store('redis')->set($cache_key, $res, 300);
+        //获取详情
+        $data = [
+            'id'        => $id,
+            'is_cache'  => 1, //前台使用缓存
+            'cache_key' => 'article:detail:%d',
+        ];
+        $status = $this->articleService->detail($data, $res);
+        if($status < 0) {
+            return $this->error($this->articleService->get_err_msg($status), $status);
         }
         return $this->success($res);
     }

@@ -33,7 +33,10 @@ return [
             'expire'        => 0,  //缓存有效期 0表示永久缓存
             'prefix'        => 'hot_', //缓存前缀 df_xxx
             'tag_prefix'    => 'tag:',
-            'serialize'     => [],
+            'serialize'     => [    //对 redis 不生效
+                'serialize'   => 'json_encode',
+                'unserialize' => 'json_decode',
+            ],
         ],
         // 更多的缓存连接
     ],

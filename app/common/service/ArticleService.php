@@ -5,6 +5,7 @@ namespace app\common\service;
 
 use app\common\lib\cls_response;
 use app\model\ArticleModel;
+use think\facade\Cache;
 use think\facade\Lang;
 use think\facade\Validate;
 
@@ -32,6 +33,8 @@ class ArticleService extends BaseService
             'title'     => 'require|string',
             'content'   => 'require|string',
             'status'    => 'require|integer',
+            'cache_key' => 'string',    //缓存键
+            'is_admin'  => 'integer',   //是否后台
         ]);
 
         $status = 1;
@@ -39,7 +42,9 @@ class ArticleService extends BaseService
             if (!$validate->check($data)) {
                 $this->exception(Lang::get('common_param_error'), cls_response::SYS_PARAMS_ERROR);
             }
-            $id = $data['id'] ?? 0;
+            $id         = $data['id'] ?? 0;
+            $cache_key  = $data['cache_key'] ?? '';
+            $is_admin   = $data['is_admin'] ?? 0;
 
             //组装数据
             $save_data = [
@@ -56,6 +61,10 @@ class ArticleService extends BaseService
                     'update_user'   => request()->auth,
                 ]);
                 $this->model->where('id', '=', $id)->update($up);
+
+                //干掉緩存
+                $cache_key = sprintf($cache_key, $id);
+                Cache::store('redis')->delete($cache_key);
             }
             else
             {
@@ -65,9 +74,14 @@ class ArticleService extends BaseService
                     'create_user'   => request()->auth,
                 ]);
                 $this->model->save($add);
-                $last_insert_id = $this->model->id; //获取自增id
+                $id = $this->model->id; //获取自增id
 
-                $ret_data = $last_insert_id;
+                $ret_data = $id;
+            }
+
+            if ($is_admin) {
+                //写入操作日志
+                $this->write_log($data['id'] ? "文章编辑" : "文章添加".$id);
             }
         }
         catch (\Exception $e) {

@@ -52,17 +52,16 @@ class UserController  extends BaseController
     public function userinfo()
     {
         $id = request()->auth;
-        if(empty($id)) {
-            return $this->invalid_params();
-        }
 
-        $cache_key = sprintf("user:id:%s", $id);
-        $res = Cache::store('redis')->get($cache_key);
-        if(empty($res)) {
-            //获取详情
-            $this->userService->detail(['id' => $id], $res);
-            //写入缓存
-            Cache::store('redis')->set($cache_key, $res, 300); //低实时性数据 10~30 分钟, 列表/详情 5 分钟
+        //获取详情
+        $data = [
+            'id'        => $id,
+            'is_cache'  => 1, //前台使用缓存
+            'cache_key' => 'user:detail:%d',
+        ];
+        $status = $this->userService->detail($data, $res);
+        if($status < 0) {
+            return $this->error($this->userService->get_err_msg($status), $status);
         }
         return $this->success($res);
     }
@@ -89,17 +88,13 @@ class UserController  extends BaseController
         $phone              = request()->post('phone/s');
         $phone_area_code    = request()->post('phone_area_code/s');
         $sms_verify_code    = request()->post('sms_verify_code/d');
-        $cache_key          = sprintf("sms_verify_code:%s", $phone_area_code.$phone);
 
-        $info = Cache::store('redis')->get($cache_key);
-        if(empty($info) || strtotime('-3 minute') > $info['time']) {
-            return $this->error(Lang::get('common_verify_code_expired'), -1);
-        }
-        if($info['code'] != $sms_verify_code) {
-            return $this->error(Lang::get('common_verify_code_error'), -2);
-        }
-
-        $status = $this->userService->forgot_pwd(request()->post());
+        $data = [
+            'phone'             => $phone,
+            'phone_area_code'   => $phone_area_code,
+            'sms_verify_code'   => $sms_verify_code,
+        ];
+        $status = $this->userService->forgot_pwd($data);
         if($status < 0) {
             return $this->error($this->userService->get_err_msg($status), $status);
         }
