@@ -5,6 +5,6 @@
 return [
     // 指令定义
     'commands' => [
-        'user_increase_stat:gen'    => 'app\command\UserIncreaseStatCommand'
+        'gen:user_increase_stat'    => 'app\command\UserIncreaseStatCommand'
     ],
 ];

@@ -14,13 +14,17 @@ class UserIncreaseStatCommand extends Command
     protected function configure()
     {
         //命令名称及用途描述
-        $this->setName('user_increase_stat:gen')
+        $this->setName('gen:user_increase_stat')
             ->setDescription('生成用户增长数据')
             ->addArgument('from_date');
     }
 
     protected function execute(Input $input, Output $output)
     {
+        //关闭超时 & 提升内存
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
         //获取日期 例 2025/11/10
         $from_date = $input->getArgument('from_date') ?? date('Y/m/d', strtotime('-1 day'));
         $data = [

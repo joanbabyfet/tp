@@ -39,7 +39,8 @@ class UserIncreaseStatService extends BaseService
             $data_map = [];
             $pre_user_count = [];
             $userModel = new UserModel();
-            $list = $userModel->master()->field([
+            //读从库
+            $list = $userModel->field([
                 'agent_id',
                 "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(`reg_time`, '%Y/%m/%d %H:00'), '+8:00', '+7:00'), '%Y/%m/%d') as date",
                 'COUNT(id) as user_increase_count',
