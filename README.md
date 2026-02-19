@@ -29,6 +29,7 @@
 * html分页器
 * 订单功能
 * 用户增长统计功能
+* command 增加 redis 锁
 
 ## Requires
 php 8.0+
